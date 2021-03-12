@@ -24,7 +24,7 @@ class Thompson:
         print(estructuras)
         print("El val 1 es", val1, "y es de largo de",len(val1))
         print("El val 2 es", val2, "y es de largo de",len(val2))
-        if(len(val2)==1):
+        if(len(val2)==1 and len(val1)>1):
             # NODO 1 
             id+=1
             nodoI1 = nodo.Nodo(id,'',[])
@@ -32,10 +32,36 @@ class Thompson:
 
             # NODOS ACTUALIZADOS
             print("ESTE NUM ES",estructuras[-1][1])
-            nodoF1 = self.nodos[ estructuras[-1][1] ]  
+            nodoF1 = self.nodos[ estructuras[-1][1]-1 ]  
 
             nodoF1.set_valor(val2)
             nodoF1.set_transicion(nodoI1.get_id())
+        elif(len(val2)==1 and len(val1)==1):
+            print("ESTE NUEVO IF")
+            print(estructuras)
+            # NODO 1 
+            id+=1
+            nodoI1 = nodo.Nodo(id,val1,[id+1])
+            self.nodos.append(nodoI1)
+            # NODO 2
+            id+=1
+            nodoI = nodo.Nodo(id,val2,[id+1])
+            self.nodos.append(nodoI)
+            # NODO 3
+            id+=1
+            nodoF1 = nodo.Nodo(id,'',[])
+            self.nodos.append(nodoF1)
+            estructuras.append((nodoI1.get_id(),nodoF1.get_id()))
+
+        else:
+            print("ENTRE A LA UNIOIN")
+            print(estructuras[-2][1])
+            print(estructuras[-1][0])
+            nodoU1 = self.nodos[ estructuras[-2][1] -1]
+            nodoU2 = self.nodos[ estructuras[-1][0] -1]
+            nodoU1.set_valor('ε')
+            nodoU1.set_transicion(nodoU2.get_id())
+
 
 
 
@@ -44,10 +70,11 @@ class Thompson:
     def crear_nodosPipe(self,val1,val2,op):
         global id
         global estructuras
-
+        print("PARA EL PIPE")
         #if(len())
-        #print("El val 1 es", val1, "y es de largo de",len(val1))
-        #print("El val 2 es", val2, "y es de largo de",len(val2))
+        print("El val 1 es", val1, "y es de largo de",len(val1))
+        print("El val 2 es", val2, "y es de largo de",len(val2))
+        print(estructuras)
         if(len(val1) == 1 and len(val2) == 1 and op =='|'):
             # NODO 1 
             id+=1
