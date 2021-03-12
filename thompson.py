@@ -37,7 +37,8 @@ class Thompson:
             nodoF1.set_valor(val2)
             nodoF1.set_transicion(nodoI1.get_id())
         elif(len(val2)==1 and len(val1)==1):
-            print("ESTE NUEVO IF")
+            print("IF DE CONCATENACION SI VAL 1 Y 2 SON LEN 1")
+            
             print(estructuras)
             # NODO 1 
             id+=1
@@ -52,6 +53,8 @@ class Thompson:
             nodoF1 = nodo.Nodo(id,'',[])
             self.nodos.append(nodoF1)
             estructuras.append((nodoI1.get_id(),nodoF1.get_id()))
+            print("CONCATENO",nodoI1.get_id(),"CON",nodoF1.get_id(),"USANDO",nodoI.get_id())
+            print("-------------LAS ESTRUCTURAS LUEGO DE UN CONCAT---------", estructuras)
 
         else:
             print("ENTRE A LA UNIOIN")
@@ -107,6 +110,7 @@ class Thompson:
             nodoF1.set_transicion(nodoFP.get_id())
             nodoF2.set_valor('ε')
             nodoF2.set_transicion(nodoFP.get_id())
+            
             
 
             estructuras.append((nodoIP.get_id(),nodoFP.get_id()))
@@ -166,23 +170,33 @@ class Thompson:
             nodoF2.set_transicion(nodoFP.get_id())
 
         else:
-
+            print("ENTRO AL IF DE PIPE DONDE ES PIPE DE ESTRUCTURAS ")
             # NODOS OPERACION
             id+=1
-            nodoIP = nodo.Nodo(id,'ε',[estructuras[0][0],estructuras[1][0]])
+            nodoIP = nodo.Nodo(id,'ε',[estructuras[-2][0],estructuras[-1][0]])
             self.nodos.append(nodoIP)
             id+=1
             nodoFP = nodo.Nodo(id,'',[])
             self.nodos.append(nodoFP)
 
             # NODOS ACTUALIZADOS
-            nodoF1 = self.nodos[ estructuras[0][1]-1 ]  
-            nodoF2 = self.nodos[ estructuras[1][1]-1 ] 
+            print("LOS NODOS A UNIR LUEGO DEL PIPE SON:")
+            nodoF1 = self.nodos[ estructuras[-2][1]-1 ]  
+            nodoF2 = self.nodos[ estructuras[-1][1]-1 ] 
+            print(nodoF1.get_id(),"Y",nodoF2.get_id())
+
             nodoF1.set_valor('ε')
             nodoF1.set_transicion(nodoFP.get_id())
             nodoF2.set_valor('ε')
             nodoF2.set_transicion(nodoFP.get_id())
+            print("CONCATENO",nodoF1.get_id(),"CON",nodoFP.get_id())
+            print("CONCATENO",nodoF2.get_id(),"CON",nodoFP.get_id())
+
+            print("CONCATENO",nodoIP.get_id(),"CON", self.nodos[estructuras[-2][0]-1].get_id() )
+            print("CONCATENO",nodoIP.get_id(),"CON",self.nodos[estructuras[-1][0]-1].get_id() )
+
             estructuras.append((nodoIP.get_id(),nodoFP.get_id()))
+            print("LAS ESTRUCTURAS LUEGO DEL PIPE",estructuras)
             
 
     def crear_nodosStar(self,val1,op):
