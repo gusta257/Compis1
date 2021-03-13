@@ -74,7 +74,7 @@ def arreglar1(r):
 r = arreglar1(r)
 r = arreglar2(r)
 print("Nueva expresion regular:",r)
-clase = thompson.Thompson()
+clase = thompson.Automata()
 
 #def metodo_pipe():
      # crear 
@@ -174,7 +174,7 @@ while i < len(r):
 #print(values)
 
 while len(ops) != 0:
-    print("entre aca")
+    #print("entre aca")
     val2 = values.pop()
     val1 = values.pop()
     op = ops.pop()
@@ -209,23 +209,78 @@ f.attr(rankdir='LR', size='8,5')
 f.attr('node', shape='doublecircle')
 f.node(str(clase.get_nodos()[-1].get_id()))
 
+estados = []
+simbolos = []
+inicio = []
+aceptacion = []
+transiciones = []
+
+inicio.append(str(clase.estadoInicial))
+aceptacion.append(str(clase.estadoFinal))
+
+
 for i in clase.get_nodos():
+    
+    estados.append(i.get_id())
+
+    if(str(i.get_valor()) != "ε" and str(i.get_valor()) != ""):
+        simbolos.append(i.get_valor())
+
     f.attr('node', shape='circle')
     largo = len(i.get_transision())
     if(largo == 0 ):
-        print(( i.get_id(), "FINAL"))
+        pass
+        #print(( i.get_id(), "FINAL"))
         
     elif (largo > 1):
         for j in i.get_transision():
-            print( ( i.get_id(),i.get_valor() ) , j )
+        #    print( ( i.get_id(),i.get_valor() ) , j )
+            transiciones.append(( str(i.get_id()),str(i.get_valor()), str(j)))
             f.edge(str(i.get_id()), str(j), label= str(i.get_valor()))
     else:
-        print(( i.get_id(),i.get_valor() ) , i.get_transision()[0] )
+        #print(( i.get_id(),i.get_valor() ) , i.get_transision()[0] )
+
+        transiciones.append(( str(i.get_id()),str(i.get_valor()), str(i.get_transision()[0])))
+
         f.edge(str(i.get_id()), str(i.get_transision()[0]), label=str(i.get_valor()))
 
+
+print("*-----------------------------------------------*")
+print("Estados",estados)
+print("Simbolos",simbolos)
+print("Inicio",inicio)
+print("Aceptacion",aceptacion)
+print("Transiciones",transiciones)
 
 # ID ES EL NUMERO DEL NODO
 # VALOR ES LA LETRA O EPSILON
 # TRANSICION ES EL ID DEL NODO A DONDE VA
 
-f.view()
+#f.view()
+
+def cerraduraE(s,trans):
+    ceradura = []
+    print("El estado es",s)
+    #print("Last transiciones son", trans)
+    for i in trans:
+        #print("LA I ES",i)
+        for j in s:
+            #print("LA j ES",j)
+            if(i[0] == j and i[1] =='ε'):
+                print("Inicial",i[0],"Transicion",i[1],"Final",i[2])
+                ceradura.append(i[2])
+    return ceradura
+
+
+t = cerraduraE(inicio,transiciones)
+print(t)
+'''
+def cerraduraT(t,simbolos,transis):
+    for i in t:
+        for j in simbolos:
+            for h in transiciones:
+                if(h[0] == i and h[1] == j):
+                    print("Para cerradura",h[1],"el mov es",h[2])
+                    t = cerraduraE(inicio[0],transiciones)
+cerraduraT(t, simbolos, transiciones)
+'''
