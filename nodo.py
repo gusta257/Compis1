@@ -18,8 +18,9 @@ class Nodo:
     
     def get_valor(self):
         return self.valor
-    def set_valor(self, valor):
-        self.valor = valor
+
+    def set_valor(self, val):
+        self.valor = val
 '''
 nodo1 = Nodo(1, 'a', [2,3])
 

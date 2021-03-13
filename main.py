@@ -90,7 +90,7 @@ while i < len(r):
     if r[i] == '(':
         #print("Parentesis abre")
         ops.append(r[i])
-    elif r[i].isalpha():
+    elif r[i].isalpha() or r[i].isdigit():
         #print("letra",r[i])
         values.append(r[i])
     elif r[i] == ')':
@@ -198,10 +198,10 @@ while len(ops) != 0:
     values.append(temp)
     #values.append(applyOp(val1, val2, op))
     
-print(nodos)
+print("NODOS",nodos)
 #print(ops)
 #print(values[-1])
-print(values)
+print("VALUES",values)
 
 f = Digraph('finite_state_machine', filename='fsm.gv')
 f.attr(rankdir='LR', size='8,5')

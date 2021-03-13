@@ -3,6 +3,7 @@ import nodo
 
 id = 0
 estructuras = []
+structures = {}
 class Thompson:
     
     def __init__(self):
@@ -20,11 +21,12 @@ class Thompson:
     def crear_nodosCat(self,val1,val2,op):
         global id
         global estructuras
-        print("HAY QUE HACER UNA CONCAT")
+        print("---------------HAY QUE HACER UNA CONCAT----------")
         print(estructuras)
         print("El val 1 es", val1, "y es de largo de",len(val1))
         print("El val 2 es", val2, "y es de largo de",len(val2))
         if(len(val2)==1 and len(val1)>1):
+            print("CONCATENAR ESTRUCTURA CON NODO")
             # NODO 1 
             id+=1
             nodoI1 = nodo.Nodo(id,'',[])
@@ -33,9 +35,40 @@ class Thompson:
             # NODOS ACTUALIZADOS
             print("ESTE NUM ES",estructuras[-1][1])
             nodoF1 = self.nodos[ estructuras[-1][1]-1 ]  
-
+            nodoIP = self.nodos[ estructuras[-1][0]-1 ]
             nodoF1.set_valor(val2)
             nodoF1.set_transicion(nodoI1.get_id())
+            print("AL NODO",nodoF1.get_id(),"SE LE CONCATENARA EL NODO",nodoI1.get_id(),"CON LA TRANSICION",nodoF1.get_valor())
+            print("SACANDO LAS ESTRUCTURAS",estructuras[-1])
+            estructuras.pop()
+            estructuras.append((nodoIP.get_id(),nodoI1.get_id()))
+            print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y ESTRUCTURA",estructuras)
+            
+            # VERIFICAR SI SE HACE ALGO CON LA ESTRUCTURA SI SE APPENDEA ALGO O QUE
+        elif(len(val2)>1 and len(val1)==1):
+            print("ENTRAMOS ACA XDDD")
+            
+            print("CONCATENAR NODO CON ESTRUCTURA")
+            # NODO 1 
+            id+=1
+            nodoI1 = nodo.Nodo(id,val1,[])
+            self.nodos.append(nodoI1)
+
+            # NODOS ACTUALIZADOS
+            print("ESTE NUM ES",estructuras[-1][0])  
+            nodoIP = self.nodos[ estructuras[-1][0]-1 ]
+            nodoF = self.nodos[ estructuras[-1][1]-1 ]
+            nodoI1.set_transicion(nodoIP.get_id())
+
+            print("AL NODO",nodoI1.get_id(),"SE LE CONCATENARA EL NODO",nodoIP.get_id(),"CON LA TRANSICION",nodoI1.get_valor())
+            print("SACANDO LAS ESTRUCTURAS",estructuras[-1])
+            estructuras.pop()
+            estructuras.append((nodoI1.get_id(),nodoF.get_id()))
+            print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y ESTRUCTURA",estructuras)
+            
+            # VERIFICAR SI SE HACE ALGO CON LA ESTRUCTURA SI SE APPENDEA ALGO O QUE
+
+
         elif(len(val2)==1 and len(val1)==1):
             print("IF DE CONCATENACION SI VAL 1 Y 2 SON LEN 1")
             
@@ -57,7 +90,7 @@ class Thompson:
             print("-------------LAS ESTRUCTURAS LUEGO DE UN CONCAT---------", estructuras)
 
         else:
-            print("ENTRE A LA UNIOIN")
+            print("CUAndo entro acaaaaaaaafjsbd fjlshdfahdflkjahsdfla djf asldkf hadsjfh asldkfjh aslkjdfh asdjlkfh ajsdfh alksdfhfa sdl")
             print(estructuras[-2][1])
             print(estructuras[-1][0])
             nodoU1 = self.nodos[ estructuras[-2][1] -1]
@@ -110,12 +143,11 @@ class Thompson:
             nodoF1.set_transicion(nodoFP.get_id())
             nodoF2.set_valor('ε')
             nodoF2.set_transicion(nodoFP.get_id())
-            
-            
-
             estructuras.append((nodoIP.get_id(),nodoFP.get_id()))
-        elif( (len(val1) == 1 and len(val2) == 2) and op =='|' ):
-            print("hola")
+            print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y 1",estructuras)
+
+        elif( (len(val1) == 1 and len(val2) > 1) and op =='|' ):
+            print("IF DONDE EL PRIMER VALOR ES 1 LETRA Y EL SEGUNDO UNA ESTRUCTURA")
             print(estructuras)
             # NODO 1 
             id+=1
@@ -128,7 +160,7 @@ class Thompson:
 
             # NODOS OPERACION
             id+=1
-            nodoIP = nodo.Nodo(id,'ε',[nodoI1.get_id(), self.nodos[estructuras[0][0]-1].get_id() ])
+            nodoIP = nodo.Nodo(id,'ε',[nodoI1.get_id(), self.nodos[estructuras[-1][0]-1].get_id() ])
             self.nodos.append(nodoIP)
             id+=1
             nodoFP = nodo.Nodo(id,'',[])
@@ -137,13 +169,20 @@ class Thompson:
             # NODOS ACTUALIZADOS
             nodoF1.set_valor('ε')
             nodoF1.set_transicion(nodoFP.get_id())
-            nodoF2 = self.nodos[ estructuras[0][1]-1 ] 
+            nodoF2 = self.nodos[ estructuras[-1][1]-1 ] 
             nodoF2.set_valor('ε')
             nodoF2.set_transicion(nodoFP.get_id())
+            print("NODOS CREADOS",nodoIP.get_id(),"Y", nodoFP.get_id())
+            print("SACANDO LAS ESTRUCTURAS",estructuras[-1])
+            estructuras.pop()
+            estructuras.append((nodoIP.get_id(),nodoFP.get_id()))
+            print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y ESTRUCTURA",estructuras)
 
 
-        elif(  (len(val1) == 2 and len(val2) == 1) and op =='|'):
-            print("Alo")
+
+
+        elif(  (len(val1) > 1 and len(val2) == 1) and op =='|'):
+            print("IF DONDE EL PRIMER VALOR ES UNA ESTRUCTURA Y EL SEGUNDO 1 LETRA ")
             print(estructuras)
             # NODO 1 
             id+=1
@@ -156,7 +195,7 @@ class Thompson:
 
             # NODOS OPERACION
             id+=1
-            nodoIP = nodo.Nodo(id,'ε',[nodoI1.get_id(), self.nodos[estructuras[0][0]-1].get_id() ])
+            nodoIP = nodo.Nodo(id,'ε',[nodoI1.get_id(), self.nodos[estructuras[-1][0]-1].get_id() ])
             self.nodos.append(nodoIP)
             id+=1
             nodoFP = nodo.Nodo(id,'',[])
@@ -165,9 +204,15 @@ class Thompson:
             # NODOS ACTUALIZADOS
             nodoF1.set_valor('ε')
             nodoF1.set_transicion(nodoFP.get_id())
-            nodoF2 = self.nodos[ estructuras[0][1]-1 ] 
+            nodoF2 = self.nodos[ estructuras[-1][1]-1 ] 
             nodoF2.set_valor('ε')
             nodoF2.set_transicion(nodoFP.get_id())
+
+            print("NODOS CREADOS",nodoIP.get_id(),"Y", nodoFP.get_id())
+            print("SACANDO LAS ESTRUCTURAS",estructuras[-1])
+            estructuras.pop()
+            estructuras.append((nodoIP.get_id(),nodoFP.get_id()))
+            print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y ESTRUCTURA",estructuras)
 
         else:
             print("ENTRO AL IF DE PIPE DONDE ES PIPE DE ESTRUCTURAS ")
@@ -194,6 +239,9 @@ class Thompson:
 
             print("CONCATENO",nodoIP.get_id(),"CON", self.nodos[estructuras[-2][0]-1].get_id() )
             print("CONCATENO",nodoIP.get_id(),"CON",self.nodos[estructuras[-1][0]-1].get_id() )
+            print("SACANDO LAS ESTRUCTURAS",estructuras[-1],"y",estructuras[-2])
+            estructuras.pop()
+            estructuras.pop()
 
             estructuras.append((nodoIP.get_id(),nodoFP.get_id()))
             print("LAS ESTRUCTURAS LUEGO DEL PIPE",estructuras)
@@ -201,6 +249,7 @@ class Thompson:
 
     def crear_nodosStar(self,val1,op):
         global id
+        print("HACIENDO EL ASTERISCO")
         print("El val 1 es", val1, "y es de largo de",len(val1))
         # IF PARA CASO BASE DE * POR EJEMPLO A* O B* O (A*|B)
         if(len(val1) == 1 and op =='*'):
@@ -226,8 +275,8 @@ class Thompson:
             nodoF1.set_transicion(nodoFS.get_id())
             nodoF1.set_transicion(nodoI1.get_id())
             nodoIS.set_transicion(nodoFS.get_id())
-
             estructuras.append((nodoIS.get_id(),nodoFS.get_id()))
+            print("LAS ESTRUCTURAS LUEGO DEL ASTERISCO DE ESTRUCTURA Y *",estructuras)
         # ELSE POR SI SERA OPERACION * SOBRE UNA ESTRUCTURA COMO (A|B)* O ((A|B)|(C|D))*
         else:
 
@@ -245,6 +294,11 @@ class Thompson:
             nodoF1.set_transicion(nodoFS.get_id())
             nodoF1.set_transicion(self.nodos[estructuras[-1][0]-1].get_id())
             nodoIS.set_transicion(nodoFS.get_id())
+            print("SACANDO LA ESTRUCTURA",estructuras[-1])
+            estructuras.pop()
+            estructuras.append((nodoIS.get_id(),nodoFS.get_id()))
+
+            print("LAS ESTRUCTURAS LUEGO DEL ASTERISCO DE ESTRUCTURA Y *",estructuras)
             
-            #estructuras.append((nodoIS.get_id(),nodoFS.get_id()))
+            
             
