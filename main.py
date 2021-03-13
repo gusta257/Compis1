@@ -34,6 +34,8 @@ def arreglar2(r):
             expr = expr + r[i]
         i += 1
     return expr
+
+
 def arreglar1(r):
     #ε
     i = 0
@@ -257,30 +259,107 @@ print("Transiciones",transiciones)
 # TRANSICION ES EL ID DEL NODO A DONDE VA
 
 #f.view()
+def mov(statesMov, letraM,transM):
+    moveA = []
+    for vMov in statesMov:
+        for bM in transM:
+            if(bM[0] == vMov and bM[1] ==letraM):
+                statesMov.append(bM[2])
+                moveA.append(bM[2])
+    return moveA
 
-def cerraduraE(s,trans):
-    ceradura = []
-    print("El estado es",s)
+def cerraduraE(estadosCerradura,trans):
+    cerradura = []
+    #print("El estado es",s)
     #print("Last transiciones son", trans)
-    for i in trans:
-        #print("LA I ES",i)
-        for j in s:
-            #print("LA j ES",j)
-            if(i[0] == j and i[1] =='ε'):
-                print("Inicial",i[0],"Transicion",i[1],"Final",i[2])
-                ceradura.append(i[2])
-    return ceradura
+
+    for qE in estadosCerradura:
+        for x in trans:
+            if(x[0] == qE and x[1] =='ε'):
+                estadosCerradura.append(x[2])
+                #cerraduraE(s,trans)
+                #print(s)
+    res = [] 
+    for i in estadosCerradura: 
+        if i not in res: 
+            res.append(i) 
+    
+    cerradura = res
+   # print("La cerradura epsilon es",cerradura)
+    return cerradura
+
+def afn(inicio,trans,sim):
+    prueba = []
+    
+    dstates = []
+    inicial = cerraduraE(inicio,trans)
+    inicial.pop(0)
+    dstates.append(inicial)
+    prueba.append(inicial)
+    print("LOS DSTATES ANTES DE ENTRAR", dstates)
+    
+    for q in dstates:
+        for c in sim:
+            
+            print("ESTADO",q,"PARA LA LETRA",c)
+            print("EL ARRAY QUE ENTRA AL MOVE",inicial)
+            print("LA LETRA QUE ENTRA AL MOVE",c)
+            
+            movea = mov(inicial,c,trans)
+            print("EL MOVE",movea)
+
+            print("ESTADO",q,"LUEGO DEL MOVE")
+            U = cerraduraE(movea,transiciones)
+            print("LA CERRADURA", U)
+            print("ESTADO",q,"LUEGO DEL MOVE Y CERRADURA")
+
+            if(U not in dstates):
+                dstates.append(U)
+                prueba.append(U)
+            print('\n')
+    print("LA USA XD",prueba)
+    
+print('\n')
+#afn(inicio,transiciones,simbolos)
 
 
+
+print("*"*100)
+print('\n')
 t = cerraduraE(inicio,transiciones)
-print(t)
-'''
-def cerraduraT(t,simbolos,transis):
-    for i in t:
-        for j in simbolos:
-            for h in transiciones:
-                if(h[0] == i and h[1] == j):
-                    print("Para cerradura",h[1],"el mov es",h[2])
-                    t = cerraduraE(inicio[0],transiciones)
-cerraduraT(t, simbolos, transiciones)
-'''
+t.pop(0)
+print("S0 es",t)
+print('\n')
+
+movea = mov(t,"a",transiciones)
+print("EL MOVE DE S0 con A es",movea)
+print("LA PINCHE T ES",t)
+t1 = cerraduraE(movea,transiciones)
+print("S1, La cerradura epsilon de MOVE (S0,A) es",t1)
+print('\n')
+moveb = mov(t,"b",transiciones)
+print("EL MOVE DE S0 con b es",moveb)
+t2 = cerraduraE(moveb,transiciones)
+print("S2, La cerradura epsilon de MOVE (S0,B) es",t2)
+print('\n')
+
+movea1 = mov(t1,"a",transiciones)
+print("EL MOVE DE S1 con A es",movea1)
+t3 = cerraduraE(movea1,transiciones)
+print("IGUAL A S1, La cerradura epsilon de MOVE (S1,A) es",t3)
+print('\n')
+moveb1 = mov(t1,"b",transiciones)
+print("EL MOVE DE S1 con b es",moveb1)
+t4 = cerraduraE(moveb1,transiciones)
+print("La cerradura epsilon de MOVE (S1,B) es",t4)
+print('\n')
+
+movea2 = mov(t2,"a",transiciones)
+print("EL MOVE DE S2 con A es",movea2)
+t5 = cerraduraE(movea2,transiciones)
+print("La cerradura epsilon de MOVE (S2,A) es",t5)
+print('\n')
+moveb2 = mov(t2,"b",transiciones)
+print("EL MOVE DE S2 con b es",moveb2)
+t6 = cerraduraE(moveb2,transiciones)
+print("La cerradura epsilon de MOVE (S2,B) es",t6)
