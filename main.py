@@ -298,39 +298,37 @@ def afn(inicio,trans,sim):
     inicial.pop(0)
     dstates.append(inicial)
     prueba.append(inicial)
-    
+    numero = 0
+    numero2 = 1
     for q in dstates:
         for c in sim:
-            
-            #print("EL ARRAY QUE ENTRA AL MOVE",inicial)
-            #print("LA LETRA QUE ENTRA AL MOVE",c)
-
             movea = mov(q,c,trans)
-            #print("EL MOVE",movea)
-
             U = cerraduraE(movea,transiciones)
-            #print("LA CERRADURA", U)
-            #print("*"*150)
-
 
             if(U not in dstates and len(U) >= 1):
-                #print("LE METEREMOS AL DSTATES EL",U)
+
+                numero +=1
                 dstates.append(U)
                 prueba.append(U)
             if(len(U) >= 1):
-                transicionesNuevas.append( (q,c,U)  )
+                transicionesNuevas.append( [q,c,U]  )
 
-    #print("LA USA XD",prueba)
+        numero2+=1
+
+
     return transicionesNuevas, prueba
     
 print('\n')
 automata, valoresF = afn(inicio,transiciones,simbolos)
-
-for n in automata:
-    print(n)
-
-for n in valoresF:
-    print(n)
+nuevoDic = {}
+contador = 0
+nuevosValores = valoresF.copy()
+for i in nuevosValores:
+    nuevoDic[tuple(i)] = contador
+    contador +=1
+for item in automata:
+    item[0]= str(nuevoDic.get(tuple(item[0])))
+    item[2]= str(nuevoDic.get(tuple(item[2])))
 
 fa = Digraph('finite_state_machine', filename='fsam.gv')
 fa.attr(rankdir='LR', size='8,5')
@@ -341,7 +339,7 @@ for i in automata:
     fa.attr('node', shape='circle')
     fa.edge(str(i[0]), str(i[2]), label=str(i[1]))
 
-#fa.view()
+fa.view()
 
 '''
 
