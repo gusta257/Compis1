@@ -1,4 +1,4 @@
-import thompson
+import thompson, AFD
 from graphviz import Digraph
 
 r = input("ingrese la expresion regular: ")
@@ -75,8 +75,9 @@ def arreglar1(r):
 
 r = arreglar1(r)
 r = arreglar2(r)
-print("Nueva expresion regular:",r)
+#print("Nueva expresion regular:",r)
 clase = thompson.Automata()
+claseAFD = AFD.AutomataFD()
 
 #def metodo_pipe():
      # crear 
@@ -188,23 +189,9 @@ while len(ops) != 0:
         clase.crear_nodosCat(val1,val2,op)
     else:
         print("MMM ESTRELLA?")
-
-    '''
-    print("El valor 1:",val1)
-    print("La operacion:", op)
-    print("El valor 2:",val2)
-    print("El temp:",temp)
-    #clase.crear_nodos(val1,val2)
-    print('*-----------FIN--------------*')
-    '''
     values.append(temp)
-    #values.append(applyOp(val1, val2, op))
-    
-print("NODOS",nodos)
-#print(ops)
-#print(values[-1])
-print("VALUES",values)
 
+#-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
 f = Digraph('finite_state_machine', filename='fsm.gv')
 f.attr(rankdir='LR', size='8,5')
 
@@ -247,79 +234,31 @@ for i in clase.get_nodos():
         f.edge(str(i.get_id()), str(i.get_transision()[0]), label=str(i.get_valor()))
 
 
-print("*-----------------------------------------------*")
+print("*----------------AUTOMATA AFN-------------------------------*")
 print("Estados",estados)
 print("Simbolos",simbolos)
 print("Inicio",inicio)
 print("Aceptacion",aceptacion)
 print("Transiciones",transiciones)
+f.view()
 
-# ID ES EL NUMERO DEL NODO
-# VALOR ES LA LETRA O EPSILON
-# TRANSICION ES EL ID DEL NODO A DONDE VA
 
-#f.view()
-def mov(statesMov, letraM,transM):
-    moveA = []
+#-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
+automata, valoresF = claseAFD.afn(inicio,transiciones,simbolos)
+llave = []
+aceptacionA = []
+for i in automata:
+    for j in i:
+        for x in j:
+            if(x == aceptacion[0]):
+                llave.append(i[2])
 
-    arrayNUEVO = statesMov.copy()
-    for vMov in arrayNUEVO:
-        for bM in transM:
-            if(bM[0] == vMov and bM[1] ==letraM):
-                arrayNUEVO.append(bM[2])
-                moveA.append(bM[2])
-
-    return moveA
-
-def cerraduraE(estadosCerradura,trans):
-    cerradura = []
-    #print("Last transiciones son", trans)
-    nuevoArray = estadosCerradura.copy()
-    for qE in nuevoArray:
-        for x in trans:
-            if(x[0] == qE and x[1] =='ε'):
-                nuevoArray.append(x[2])
-                #cerraduraE(s,trans)
-                #print(s)
-    res = [] 
-    for i in nuevoArray: 
-        if i not in res: 
-            res.append(i) 
+resT = [] 
+for i in llave: 
+    if i not in resT: 
+        resT.append(i) 
+llave = resT
     
-    cerradura = res
-   # print("La cerradura epsilon es",cerradura)
-    return cerradura
-
-def afn(inicio,trans,sim):
-    prueba = []
-    transicionesNuevas = []
-    dstates = []
-    inicial = cerraduraE(inicio,trans)
-    inicial.pop(0)
-    dstates.append(inicial)
-    prueba.append(inicial)
-    numero = 0
-    numero2 = 1
-    for q in dstates:
-        for c in sim:
-            movea = mov(q,c,trans)
-            U = cerraduraE(movea,transiciones)
-
-            if(U not in dstates and len(U) >= 1):
-
-                numero +=1
-                dstates.append(U)
-                prueba.append(U)
-            if(len(U) >= 1):
-                transicionesNuevas.append( [q,c,U]  )
-
-        numero2+=1
-
-
-    return transicionesNuevas, prueba
-    
-print('\n')
-automata, valoresF = afn(inicio,transiciones,simbolos)
 nuevoDic = {}
 contador = 0
 nuevosValores = valoresF.copy()
@@ -330,56 +269,36 @@ for item in automata:
     item[0]= str(nuevoDic.get(tuple(item[0])))
     item[2]= str(nuevoDic.get(tuple(item[2])))
 
+for item in llave:
+    aceptacionA.append(str(nuevoDic.get(tuple(item))))
+
 fa = Digraph('finite_state_machine', filename='fsam.gv')
 fa.attr(rankdir='LR', size='8,5')
+for i in aceptacionA:
 
+    fa.attr('node', shape='doublecircle')
+    fa.node(i)
 
+estadosA = []
+simbolosA = []
+print(automata)
 for i in automata:
-
+    estadosA.append(i[0])
+    estadosA.append(i[2])
     fa.attr('node', shape='circle')
     fa.edge(str(i[0]), str(i[2]), label=str(i[1]))
 
+resT = [] 
+for i in estadosA: 
+    if i not in resT: 
+        resT.append(i) 
+estadosA = resT
+inicioA = [automata[0][0]]
+print("*------------------AUTOMATA AFD-----------------------------*")
+print("Estados",estadosA)
+print("Simbolos",simbolos)
+print("Inicio",inicioA)
+print("Aceptacion",aceptacionA)
+print("Transiciones",automata)
 fa.view()
 
-'''
-
-print("*"*100)
-print('\n')
-t = cerraduraE(inicio,transiciones)
-t.pop(0)
-print("S0 es",t)
-print('\n')
-
-movea = mov(t,"a",transiciones)
-print("EL MOVE DE S0 con A es",movea)
-print("LA PINCHE T ES",t)
-t1 = cerraduraE(movea,transiciones)
-print("S1, La cerradura epsilon de MOVE (S0,A) es",t1)
-print('\n')
-moveb = mov(t,"b",transiciones)
-print("EL MOVE DE S0 con b es",moveb)
-t2 = cerraduraE(moveb,transiciones)
-print("S2, La cerradura epsilon de MOVE (S0,B) es",t2)
-print('\n')
-
-movea1 = mov(t1,"a",transiciones)
-print("EL MOVE DE S1 con A es",movea1)
-t3 = cerraduraE(movea1,transiciones)
-print("IGUAL A S1, La cerradura epsilon de MOVE (S1,A) es",t3)
-print('\n')
-moveb1 = mov(t1,"b",transiciones)
-print("EL MOVE DE S1 con b es",moveb1)
-t4 = cerraduraE(moveb1,transiciones)
-print("La cerradura epsilon de MOVE (S1,B) es",t4)
-print('\n')
-
-movea2 = mov(t2,"a",transiciones)
-print("EL MOVE DE S2 con A es",movea2)
-t5 = cerraduraE(movea2,transiciones)
-print("La cerradura epsilon de MOVE (S2,A) es",t5)
-print('\n')
-moveb2 = mov(t2,"b",transiciones)
-print("EL MOVE DE S2 con b es",moveb2)
-t6 = cerraduraE(moveb2,transiciones)
-print("La cerradura epsilon de MOVE (S2,B) es",t6)
-'''

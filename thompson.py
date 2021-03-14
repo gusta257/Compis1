@@ -3,16 +3,12 @@ import nodo
 
 id = 0
 estructuras = []
-structures = {}
+
 class Automata:
     
     def __init__(self):
         self.estadoInicial = None
         self.estadoFinal = None
-        self.estados = []
-        self.funcionTransicion = {}
-        self.simbolos = []
-        self.ids = []
         self.nodos = []
     
     def get_nodos(self):
