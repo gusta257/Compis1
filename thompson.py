@@ -17,12 +17,12 @@ class Automata:
     def crear_nodosCat(self,val1,val2,op):
         global id
         global estructuras
-        #print("---------------HAY QUE HACER UNA CONCAT----------")
-        #print(estructuras)
+        print("---------------HAY QUE HACER UNA CONCAT----------")
+        print(estructuras)
         #print("El val 1 es", val1, "y es de largo de",len(val1))
         #print("El val 2 es", val2, "y es de largo de",len(val2))
         if(len(val2)==1 and len(val1)>1):
-            #print("CONCATENAR ESTRUCTURA CON NODO")
+            print("CONCATENAR ESTRUCTURA CON NODO")
             # NODO 1 
             id+=1
             nodoI1 = nodo.Nodo(id,'',[])
@@ -46,7 +46,7 @@ class Automata:
         elif(len(val2)>1 and len(val1)==1):
             #print("ENTRAMOS ACA XDDD")
             
-            #print("CONCATENAR NODO CON ESTRUCTURA")
+            print("CONCATENAR NODO CON ESTRUCTURA")
             # NODO 1 
             id+=1
             nodoI1 = nodo.Nodo(id,val1,[])
@@ -70,7 +70,7 @@ class Automata:
 
 
         elif(len(val2)==1 and len(val1)==1):
-            #print("IF DE CONCATENACION SI VAL 1 Y 2 SON LEN 1")
+            print("IF DE CONCATENACION SI VAL 1 Y 2 SON LEN 1")
             
             #print(estructuras)
             # NODO 1 
@@ -92,25 +92,43 @@ class Automata:
             #print("-------------LAS ESTRUCTURAS LUEGO DE UN CONCAT---------", estructuras)
 
         else:
-            #print("CUAndo entro acaaaaaaaafjsbd fjlshdfahdflkjahsdfla djf asldkf hadsjfh asldkfjh aslkjdfh asdjlkfh ajsdfh alksdfhfa sdl")
+            print("CUAndo entro acaaaaaaaafjsbd fjlshdfahdflkjahsdfla djf asldkf hadsjfh asldkfjh aslkjdfh asdjlkfh ajsdfh alksdfhfa sdl")
+            print(val1)
+            print(val2)
+
             #print(estructuras[-2][1])
             #print(estructuras[-1][0])
             nodoU1 = self.nodos[ estructuras[-2][1] -1]
             nodoU2 = self.nodos[ estructuras[-1][0] -1]
             nodoU1.set_valor('ε')
             nodoU1.set_transicion(nodoU2.get_id())
+
+            #LINEA CAMBIADA
+            nodoF = estructuras.pop()
+            print(nodoF)
+            print(type(nodoF))
+            #LINEA CAMBIADA
+            nodoI = estructuras.pop()
+            print(nodoI)
+            print(nodoI[0])
+            print(type(nodoI))
+            #LINEA CAMBIADA
+            estructuras.append((nodoI[0],nodoF[1]))
+            
             self.estadoInicial = estructuras[0][0]
             self.estadoFinal = estructuras[-1][1]
+
+            print("ESTRUCTURAS LUEGO DEL ASJLDHFA",estructuras)
 
 
     def crear_nodosPipe(self,val1,val2,op):
         global id
         global estructuras
-        #print("PARA EL PIPE")
+        print("PARA EL PIPE")
         #if(len())
-        #print("El val 1 es", val1, "y es de largo de",len(val1))
-        #print("El val 2 es", val2, "y es de largo de",len(val2))
-        #print(estructuras)
+        print("El val 1 es", val1, "y es de largo de",len(val1))
+        print("El val 2 es", val2, "y es de largo de",len(val2))
+        print(estructuras)
         if(len(val1) == 1 and len(val2) == 1 and op =='|'):
             # NODO 1 
             id+=1
@@ -144,7 +162,7 @@ class Automata:
             nodoF2.set_valor('ε')
             nodoF2.set_transicion(nodoFP.get_id())
             estructuras.append((nodoIP.get_id(),nodoFP.get_id()))
-            #print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y 1",estructuras)
+            print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y 1",estructuras)
             self.estadoInicial = estructuras[0][0]
             self.estadoFinal = estructuras[-1][1]
 
@@ -184,7 +202,7 @@ class Automata:
 
 
         elif(  (len(val1) > 1 and len(val2) == 1) and op =='|'):
-            #print("IF DONDE EL PRIMER VALOR ES UNA ESTRUCTURA Y EL SEGUNDO 1 LETRA ")
+            print("IF DONDE EL PRIMER VALOR ES UNA ESTRUCTURA Y EL SEGUNDO 1 LETRA ")
             #print(estructuras)
             # NODO 1 
             id+=1
@@ -210,11 +228,11 @@ class Automata:
             nodoF2.set_valor('ε')
             nodoF2.set_transicion(nodoFP.get_id())
 
-            #print("NODOS CREADOS",nodoIP.get_id(),"Y", nodoFP.get_id())
-            #print("SACANDO LAS ESTRUCTURAS",estructuras[-1])
+            print("NODOS CREADOS",nodoIP.get_id(),"Y", nodoFP.get_id())
+            print("SACANDO LAS ESTRUCTURAS",estructuras[-1])
             estructuras.pop()
             estructuras.append((nodoIP.get_id(),nodoFP.get_id()))
-            #print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y ESTRUCTURA",estructuras)
+            print("LAS ESTRUCTURAS LUEGO DEL PIPE DE 1 Y ESTRUCTURA",estructuras)
 
         else:
             #print("ENTRO AL IF DE PIPE DONDE ES PIPE DE ESTRUCTURAS ")
@@ -253,8 +271,9 @@ class Automata:
 
     def crear_nodosStar(self,val1,op):
         global id
-        #print("HACIENDO EL ASTERISCO")
-        #print("El val 1 es", val1, "y es de largo de",len(val1))
+        print("HACIENDO EL ASTERISCO")
+        print("El val 1 es", val1, "y es de largo de",len(val1))
+        print("LAS ESTRUCTURAS ANTES DEL *", estructuras)
         # IF PARA CASO BASE DE * POR EJEMPLO A* O B* O (A*|B)
         if(len(val1) == 1 and op =='*'):
             # NODO 1 

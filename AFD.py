@@ -23,9 +23,13 @@ class AutomataFD:
     def cerraduraE(self, estadosCerradura,trans):
         cerradura = []
         nuevoArray = estadosCerradura.copy()
+        visitados = []
+        #print("EL NUEVO ARRAY ES", nuevoArray)
         for qE in nuevoArray:
             for x in trans:
-                if(x[0] == qE and x[1] =='ε'):
+                if(x[0] == qE and x[1] =='ε' and (x[2] not in visitados)):
+                    #print("APPENDENADO",x[2])
+                    visitados.append(x[2])
                     nuevoArray.append(x[2])
         res = [] 
         for i in nuevoArray: 
@@ -57,6 +61,8 @@ class AutomataFD:
                     transicionesNuevas.append( [q,c,U]  )
 
         return transicionesNuevas, elementos
+## SE DEBE DE ARREGLAR LO DEL LOOP INFINITO DE EPSILONSCLS
+
         
     
     
