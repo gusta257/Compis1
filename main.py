@@ -261,26 +261,28 @@ print("Transiciones",transiciones)
 #f.view()
 def mov(statesMov, letraM,transM):
     moveA = []
-    for vMov in statesMov:
+
+    arrayNUEVO = statesMov.copy()
+    for vMov in arrayNUEVO:
         for bM in transM:
             if(bM[0] == vMov and bM[1] ==letraM):
-                statesMov.append(bM[2])
+                arrayNUEVO.append(bM[2])
                 moveA.append(bM[2])
+
     return moveA
 
 def cerraduraE(estadosCerradura,trans):
     cerradura = []
-    #print("El estado es",s)
     #print("Last transiciones son", trans)
-
-    for qE in estadosCerradura:
+    nuevoArray = estadosCerradura.copy()
+    for qE in nuevoArray:
         for x in trans:
             if(x[0] == qE and x[1] =='ε'):
-                estadosCerradura.append(x[2])
+                nuevoArray.append(x[2])
                 #cerraduraE(s,trans)
                 #print(s)
     res = [] 
-    for i in estadosCerradura: 
+    for i in nuevoArray: 
         if i not in res: 
             res.append(i) 
     
@@ -290,39 +292,58 @@ def cerraduraE(estadosCerradura,trans):
 
 def afn(inicio,trans,sim):
     prueba = []
-    
+    transicionesNuevas = []
     dstates = []
     inicial = cerraduraE(inicio,trans)
     inicial.pop(0)
     dstates.append(inicial)
     prueba.append(inicial)
-    print("LOS DSTATES ANTES DE ENTRAR", dstates)
     
     for q in dstates:
         for c in sim:
             
-            print("ESTADO",q,"PARA LA LETRA",c)
-            print("EL ARRAY QUE ENTRA AL MOVE",inicial)
-            print("LA LETRA QUE ENTRA AL MOVE",c)
-            
-            movea = mov(inicial,c,trans)
-            print("EL MOVE",movea)
+            #print("EL ARRAY QUE ENTRA AL MOVE",inicial)
+            #print("LA LETRA QUE ENTRA AL MOVE",c)
 
-            print("ESTADO",q,"LUEGO DEL MOVE")
+            movea = mov(q,c,trans)
+            #print("EL MOVE",movea)
+
             U = cerraduraE(movea,transiciones)
-            print("LA CERRADURA", U)
-            print("ESTADO",q,"LUEGO DEL MOVE Y CERRADURA")
+            #print("LA CERRADURA", U)
+            #print("*"*150)
 
-            if(U not in dstates):
+
+            if(U not in dstates and len(U) >= 1):
+                #print("LE METEREMOS AL DSTATES EL",U)
                 dstates.append(U)
                 prueba.append(U)
-            print('\n')
-    print("LA USA XD",prueba)
+            if(len(U) >= 1):
+                transicionesNuevas.append( (q,c,U)  )
+
+    #print("LA USA XD",prueba)
+    return transicionesNuevas, prueba
     
 print('\n')
-#afn(inicio,transiciones,simbolos)
+automata, valoresF = afn(inicio,transiciones,simbolos)
+
+for n in automata:
+    print(n)
+
+for n in valoresF:
+    print(n)
+
+fa = Digraph('finite_state_machine', filename='fsam.gv')
+fa.attr(rankdir='LR', size='8,5')
 
 
+for i in automata:
+
+    fa.attr('node', shape='circle')
+    fa.edge(str(i[0]), str(i[2]), label=str(i[1]))
+
+#fa.view()
+
+'''
 
 print("*"*100)
 print('\n')
@@ -363,3 +384,4 @@ moveb2 = mov(t2,"b",transiciones)
 print("EL MOVE DE S2 con b es",moveb2)
 t6 = cerraduraE(moveb2,transiciones)
 print("La cerradura epsilon de MOVE (S2,B) es",t6)
+'''
