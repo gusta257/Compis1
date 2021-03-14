@@ -172,9 +172,7 @@ while i < len(r):
             #values.append(applyOp(val1, val2, op))
     i+=1
 #print('*---------------------------------------------------------------*')
-#print(ops)
-#print(values[-1])
-print(values)
+
 
 while len(ops) != 0:
     #print("entre aca")
@@ -191,6 +189,9 @@ while len(ops) != 0:
         print("MMM ESTRELLA?")
     values.append(temp)
 
+print(ops)
+#print(values[-1])
+print(values)
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
 f = Digraph('finite_state_machine', filename='fsm.gv')
 f.attr(rankdir='LR', size='8,5')
@@ -250,20 +251,30 @@ f.view()
 
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
 automata, valoresF = claseAFD.afn(inicio,transiciones,simbolos)
+#print('')
+#print("VALORESf",valoresF)
+#print('')
+#for i in automata:
+#    print("automata",i)
+#print('')
 llave = []
 aceptacionA = []
 for i in automata:
-    for j in i:
-        for x in j:
-            if(x == aceptacion[0]):
-                llave.append(i[2])
+    for j in i[2]:
+        
+        if(j == aceptacion[0]):
+            #print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
+            llave.append(i[2])
 
 resT = [] 
 for i in llave: 
     if i not in resT: 
         resT.append(i) 
 llave = resT
-    
+
+for i in llave:
+    print(i)
+
 nuevoDic = {}
 contador = 0
 nuevosValores = valoresF.copy()
@@ -292,7 +303,7 @@ for i in automata:
     if i not in resT: 
         resT.append(i) 
 automata = resT
-print(automata)
+#print(automata)
 for i in automata:
     estadosA.append(i[0])
     estadosA.append(i[2])
