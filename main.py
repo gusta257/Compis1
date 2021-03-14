@@ -75,7 +75,7 @@ def arreglar1(r):
 
 r = arreglar1(r)
 r = arreglar2(r)
-#print("Nueva expresion regular:",r)
+print("Nueva expresion regular:",r)
 clase = thompson.Automata()
 claseAFD = AFD.AutomataFD()
 
@@ -174,7 +174,7 @@ while i < len(r):
 #print('*---------------------------------------------------------------*')
 #print(ops)
 #print(values[-1])
-#print(values)
+print(values)
 
 while len(ops) != 0:
     #print("entre aca")
@@ -233,6 +233,11 @@ for i in clase.get_nodos():
 
         f.edge(str(i.get_id()), str(i.get_transision()[0]), label=str(i.get_valor()))
 
+resT = [] 
+for i in simbolos: 
+    if i not in resT: 
+        resT.append(i) 
+simbolos = resT
 
 print("*----------------AUTOMATA AFN-------------------------------*")
 print("Estados",estados)
@@ -281,6 +286,12 @@ for i in aceptacionA:
 
 estadosA = []
 simbolosA = []
+
+resT = [] 
+for i in automata: 
+    if i not in resT: 
+        resT.append(i) 
+automata = resT
 print(automata)
 for i in automata:
     estadosA.append(i[0])

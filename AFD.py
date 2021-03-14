@@ -35,18 +35,21 @@ class AutomataFD:
         return cerradura
 
     def afn(self, inicio,trans,sim):
+
         elementos = []
         transicionesNuevas = []
         dstates = []
         inicial = self.cerraduraE(inicio,trans)
-        inicial.pop(0)
+
         dstates.append(inicial)
         elementos.append(inicial)
 
         for q in dstates:
             for c in sim:
                 movea = self.mov(q,c,trans)
+
                 U = self.cerraduraE(movea,trans)
+
                 if(U not in dstates and len(U) >= 1):
                     dstates.append(U)
                     elementos.append(U)
