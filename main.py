@@ -309,6 +309,7 @@ while i < len(r):
                     print("Para el pipe")
                 elif(op == '.'):
                     #clase.crear_nodosCat(val1,val2,op)
+                    claseAFDD.crear_nodosCat(val1,val2,op)
                     print("Para el concat")
                 values.append(temp)
         ops.pop()
@@ -351,8 +352,9 @@ while len(ops) != 0:
         print("Para el pipe")
         claseAFDD.crearHojasPipe(val1,val2,op)
     elif(op == '.'):
-        print("Para el concat")
         claseAFDD.crear_nodosCat(val1,val2,op)
+        print("Para el concat")
+        
     else:
         print("MMM ESTRELLA?")
     values.append(temp)
@@ -362,4 +364,125 @@ print(nodos)
 print(ops)
 arboles = claseAFDD.get_nodos()
 for i in arboles:
-    print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID(),"Y ES PADRE DE",i.get_hijos())
+    if(len(i.get_hijos()) > 1):
+        if(i.get_padreID() != ""):
+            print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID().get_id(),"Y ES PADRE DE",i.get_hijos()[0].get_id(),"Y DE",i.get_hijos()[1].get_id())  
+        else:
+            print("LA HOJA",i.get_id(),i.get_valor(),"ES LA RAIZ Y ES PADRE DE",i.get_hijos()[0].get_id(), "Y DE",i.get_hijos()[1].get_id())
+    elif(len(i.get_hijos()) == 1):
+        print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID().get_id(),"Y ES PADRE DE",i.get_hijos()[0].get_id())
+    else:
+        print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID().get_id(),"Y NO TIENE HIJOS Y SU ID IMPORTANTE ES",i.get_iDImportante())
+
+
+
+importantes = claseAFDD.get_importantValues()
+for elemento in importantes:
+    print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
+
+
+def nullable(elemento):
+    #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
+    if(len(elemento.get_hijos()) > 0):
+        #print("NO ES HOJA")
+        if(elemento.get_valor() == "|"):
+            #print("C1 OR C2 NULLABLE")
+            c1 = nullable(elemento.get_hijos()[0])
+            c2 = nullable(elemento.get_hijos()[1])
+            if(c1 or c2):
+                #print("ES NULLABLE")
+                return True
+            else:
+                #print("NO LO ES")
+                return False
+
+        elif(elemento.get_valor() == "."):
+            #print("C1 AND C2 NULLABLE")
+            c1 = nullable(elemento.get_hijos()[0])
+            c2 = nullable(elemento.get_hijos()[1])
+            if(c1 and c2):
+                #print("ES NULLABLE")
+                return True
+            else:
+                #print("NO LO ES")
+                return False
+        else:
+            return True
+    else:
+        #print("ES HOJA")
+        if(elemento.get_valor() != "ε"):
+            return False
+        else:
+            return True
+
+
+def firstpos(elemento):
+    #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
+    if(len(elemento.get_hijos()) > 0):
+        #print("NO ES HOJA")
+        if(elemento.get_valor() == "|"):
+            c1 = firstpos(elemento.get_hijos()[0])
+            c2 = firstpos(elemento.get_hijos()[1])
+            resp = str(c1)+','+str(c2)
+            return resp
+        elif(elemento.get_valor() == "."):
+            h1 = (elemento.get_hijos()[0])
+            if(nullable(h1)):
+                c1 = firstpos(elemento.get_hijos()[0])
+                c2 = firstpos(elemento.get_hijos()[1])
+                resp = str(c1)+','+str(c2)
+                return resp
+            else:
+                c1 = firstpos(elemento.get_hijos()[0])
+                return c1
+        else:
+            return firstpos(elemento.get_hijos()[0])
+    else:
+        if(elemento.get_valor() != "ε"):
+            return (elemento.get_iDImportante())
+        else:
+            return "CERO"
+
+def lastpos(elemento):
+    #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
+    if(len(elemento.get_hijos()) > 0):
+        #print("NO ES HOJA")
+        if(elemento.get_valor() == "|"):
+            c1 = lastpos(elemento.get_hijos()[0])
+            c2 = lastpos(elemento.get_hijos()[1])
+            resp = str(c1)+','+str(c2)
+            return resp
+        elif(elemento.get_valor() == "."):
+            h2 = (elemento.get_hijos()[1])
+            if(nullable(h2)):
+                c1 = lastpos(elemento.get_hijos()[0])
+                c2 = lastpos(elemento.get_hijos()[1])
+                resp = str(c1)+','+str(c2)
+                return resp
+            else:
+                c2 = lastpos(elemento.get_hijos()[1])
+                return c2
+        else:
+            return lastpos(elemento.get_hijos()[0])
+    else:
+        if(elemento.get_valor() != "ε"):
+            return (elemento.get_iDImportante())
+        else:
+            return "CERO"
+
+#def firstpos(elemento, elementoImportante):
+
+
+positions = []
+for i in arboles:
+    #print("El first pos de", i.get_valor() ,"es",firstpos(i),"y su lastpos es",lastpos(i))
+    positions.append((i.get_id(),firstpos(i),lastpos(i)))
+for i in positions:
+    print(i)
+
+#print("Elemento",importantes)   
+#print(nullable(arboles[2]))
+
+#for elemento in arboles:
+#    print("*-----------------------------------------------------------*")
+#    print(nullable(elemento))
