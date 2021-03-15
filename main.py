@@ -306,11 +306,11 @@ while i < len(r):
                 if(op == '|'):
                     claseAFDD.crearHojasPipe(val1,val2,op)
                     #clase.crear_nodosPipe(val1,val2,op)
-                    print("Para el pipe")
+                    #print("Para el pipe")
                 elif(op == '.'):
                     #clase.crear_nodosCat(val1,val2,op)
                     claseAFDD.crear_nodosCat(val1,val2,op)
-                    print("Para el concat")
+                    #print("Para el concat")
                 values.append(temp)
         ops.pop()
     else:
@@ -323,10 +323,10 @@ while i < len(r):
                 nodos.append(temp)
                 if(op == '|'):
                     claseAFDD.crearHojasPipe(val1,val2,op)
-                    print("Para el pipe")
+                    #print("Para el pipe")
                 elif(op == '.'):
                     claseAFDD.crear_nodosCat(val1,val2,op)
-                    print("Para el concat")
+                    #print("Para el concat")
                 values.append(temp)
             ops.append(r[i])
         else:
@@ -336,7 +336,7 @@ while i < len(r):
             temp = val1+op
             #print('*------------ESTRELLA-------------*')
             claseAFDD.crear_nodosStar(val1,op)
-            print("Para la estrella")
+            #print("Para la estrella")
             nodos.append(temp)
             values.append(temp)
             #values.append(applyOp(val1, val2, op))
@@ -349,19 +349,19 @@ while len(ops) != 0:
     temp = val1+op+val2
     nodos.append(temp)
     if(op == '|'):
-        print("Para el pipe")
+        #print("Para el pipe")
         claseAFDD.crearHojasPipe(val1,val2,op)
     elif(op == '.'):
         claseAFDD.crear_nodosCat(val1,val2,op)
-        print("Para el concat")
+        #print("Para el concat")
         
     else:
         print("MMM ESTRELLA?")
     values.append(temp)
 
-print(values)
-print(nodos)
-print(ops)
+#print(values)
+#print(nodos)
+#print(ops)
 arboles = claseAFDD.get_nodos()
 '''
 for i in arboles:
@@ -378,9 +378,9 @@ for i in arboles:
 
 
 importantes = claseAFDD.get_importantValues()
-for elemento in importantes:
-    print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
-
+#for elemento in importantes:
+#    print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
+simbolos = []
 
 def nullable(elemento):
     #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
@@ -412,7 +412,10 @@ def nullable(elemento):
     else:
         #print("ES HOJA")
         if(elemento.get_valor() != "ε"):
+            if(elemento.get_valor() != "#"):
+                simbolos.append(elemento.get_valor())
             return False
+            
         else:
             return True
 
@@ -499,9 +502,6 @@ def followPos(elemento):
             return "CERO"
 
 
-#def firstpos(elemento, elementoImportante):
-
-
 positions = []
 for i in arboles:
     #print("El first pos de", i.get_valor() ,"es",firstpos(i),"y su lastpos es",lastpos(i))
@@ -512,17 +512,17 @@ followTotal = []
 print("*"*100)
 for i in positions:
     if(i[0].get_valor() == "."):
-        print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
-        print(i[0].get_valor(), i[0].get_hijos()[1].get_valor(),i[1],i[2])
+        #print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
+        #print(i[0].get_valor(), i[0].get_hijos()[1].get_valor(),i[1],i[2])
         hijo1 =  i[0].get_hijos()[0]
         hijo2 =  i[0].get_hijos()[1]
         for posicion in positions:
             if(posicion[0]==hijo1):
-                print("PARA LOS POS XD",posicion[2])
+                #print("PARA LOS POS XD",posicion[2])
                 followvalores.append(posicion[2])
                 followTotal.append(posicion[2])
             if(posicion[0]==hijo2):
-                print("EL FOLLOW POS XD",posicion[1])
+                #print("EL FOLLOW POS XD",posicion[1])
                 followPosition.append(posicion[1])
                 followTotal.append(posicion[1])
 
@@ -531,19 +531,19 @@ for i in positions:
 
 
     elif(i[0].get_valor() == "*"):
-        print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
-        print("PARA LA POS XD", i[2],"EL FOLLOW POS XD", i[1])
+        #print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
+        #print("PARA LA POS XD", i[2],"EL FOLLOW POS XD", i[1])
         followvalores.append(i[2])
         followPosition.append(i[1])
         followTotal.append(i[2])
         followTotal.append(i[1])
 
 
-print(followvalores)
-print("*-----------------------------------------------------------*")
-print(followPosition)
-print("*-----------------------------------------------------------*")
-print(followTotal)
+#print(followvalores)
+#print("*-----------------------------------------------------------*")
+#print(followPosition)
+#print("*-----------------------------------------------------------*")
+#print(followTotal)
 
 respuesta = []
 for i in range(len(followPosition)):
@@ -552,11 +552,74 @@ print(respuesta)
 
 for i in range(len(followvalores)):
     for j in followvalores[i]:
-        print("JOTA ES", j)
-        print("LA POSICION",j,"TIENE EL VALOR",followPosition[i])
+        #print("JOTA ES", j)
+        #print("LA POSICION",j,"TIENE EL VALOR",followPosition[i])
         for asd in followPosition[i]:
             respuesta[j-1].append(asd)
 for i in respuesta:
     i.pop(0)
-
+resT = [] 
+for i in simbolos: 
+    if i not in resT: 
+        resT.append(i) 
+simbolos = resT
+#print(simbolos)
+print("*-----------------------------------------------------------*")
 print(respuesta)
+print("*-----------------------------------------------------------*")
+for i in positions:
+    if(i[0].get_padreID() == ""):
+        firstposRoot = i[1]
+
+for i in importantes:
+    print(i) 
+
+#for i in arboles:
+#    print(i)
+
+
+dEstates = [[1,2,3],[1,2,3,4],[1,2,3,5],[1,2,3,6]]
+numeros = []
+U = []
+
+for i in dEstates:
+    for j in simbolos:
+        for k in importantes:
+            #print(i,j,k[0].get_valor())
+            if(j == k[0].get_valor() and (k[0].get_iDImportante() in i)):
+                #print("Si existe")
+                numeros.append(k[0].get_iDImportante())
+        print("Para",j,numeros)
+        for h in numeros:
+            U += respuesta[h-1]
+        print("U", U)
+
+        U.clear()
+        numeros.clear() 
+
+
+'''
+def afnDirecto(firstposRoot,importantes,sim):
+    
+    elementos = []
+    transicionesNuevas = []
+    dstates = []
+    inicial = firstposRoot
+    #print("*"*150)
+    #print("LA INICIAL", inicial)
+    dstates.append(inicial)
+    elementos.append(inicial)
+
+    for estado in dstates:
+        for letra in sim:
+            print(estado, letra)
+            for i in estado:
+                for imp in importantes:
+                    if(i == imp[])
+            
+
+afnDirecto(firstposRoot,importantes,simbolos)
+            
+
+
+'''
