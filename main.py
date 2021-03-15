@@ -363,6 +363,7 @@ print(values)
 print(nodos)
 print(ops)
 arboles = claseAFDD.get_nodos()
+'''
 for i in arboles:
     if(len(i.get_hijos()) > 1):
         if(i.get_padreID() != ""):
@@ -373,7 +374,7 @@ for i in arboles:
         print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID().get_id(),"Y ES PADRE DE",i.get_hijos()[0].get_id())
     else:
         print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID().get_id(),"Y NO TIENE HIJOS Y SU ID IMPORTANTE ES",i.get_iDImportante())
-
+'''
 
 
 importantes = claseAFDD.get_importantValues()
@@ -423,14 +424,14 @@ def firstpos(elemento):
         if(elemento.get_valor() == "|"):
             c1 = firstpos(elemento.get_hijos()[0])
             c2 = firstpos(elemento.get_hijos()[1])
-            resp = str(c1)+','+str(c2)
+            resp = (c1)+(c2)
             return resp
         elif(elemento.get_valor() == "."):
             h1 = (elemento.get_hijos()[0])
             if(nullable(h1)):
                 c1 = firstpos(elemento.get_hijos()[0])
                 c2 = firstpos(elemento.get_hijos()[1])
-                resp = str(c1)+','+str(c2)
+                resp = (c1)+(c2)
                 return resp
             else:
                 c1 = firstpos(elemento.get_hijos()[0])
@@ -439,7 +440,7 @@ def firstpos(elemento):
             return firstpos(elemento.get_hijos()[0])
     else:
         if(elemento.get_valor() != "ε"):
-            return (elemento.get_iDImportante())
+            return [elemento.get_iDImportante()]
         else:
             return "CERO"
 
@@ -450,14 +451,14 @@ def lastpos(elemento):
         if(elemento.get_valor() == "|"):
             c1 = lastpos(elemento.get_hijos()[0])
             c2 = lastpos(elemento.get_hijos()[1])
-            resp = str(c1)+','+str(c2)
+            resp = (c1)+(c2)
             return resp
         elif(elemento.get_valor() == "."):
             h2 = (elemento.get_hijos()[1])
             if(nullable(h2)):
                 c1 = lastpos(elemento.get_hijos()[0])
                 c2 = lastpos(elemento.get_hijos()[1])
-                resp = str(c1)+','+str(c2)
+                resp = (c1)+(c2)
                 return resp
             else:
                 c2 = lastpos(elemento.get_hijos()[1])
@@ -466,9 +467,37 @@ def lastpos(elemento):
             return lastpos(elemento.get_hijos()[0])
     else:
         if(elemento.get_valor() != "ε"):
-            return (elemento.get_iDImportante())
+            return [elemento.get_iDImportante()]
         else:
             return "CERO"
+
+def followPos(elemento):
+    #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
+    if(len(elemento.get_hijos()) > 0):
+        #print("NO ES HOJA")
+        if(elemento.get_valor() == "|"):
+            c1 = lastpos(elemento.get_hijos()[0])
+            c2 = lastpos(elemento.get_hijos()[1])
+            resp = (c1)+(c2)
+            return resp
+        elif(elemento.get_valor() == "."):
+            h2 = (elemento.get_hijos()[1])
+            if(nullable(h2)):
+                c1 = lastpos(elemento.get_hijos()[0])
+                c2 = lastpos(elemento.get_hijos()[1])
+                resp = (c1)+(c2)
+                return resp
+            else:
+                c2 = lastpos(elemento.get_hijos()[1])
+                return c2
+        else:
+            return lastpos(elemento.get_hijos()[0])
+    else:
+        if(elemento.get_valor() != "ε"):
+            return [elemento.get_iDImportante()]
+        else:
+            return "CERO"
+
 
 #def firstpos(elemento, elementoImportante):
 
@@ -476,13 +505,58 @@ def lastpos(elemento):
 positions = []
 for i in arboles:
     #print("El first pos de", i.get_valor() ,"es",firstpos(i),"y su lastpos es",lastpos(i))
-    positions.append((i.get_id(),firstpos(i),lastpos(i)))
+    positions.append((i,firstpos(i),lastpos(i)))
+followvalores = []
+followPosition = []
+followTotal = []
+print("*"*100)
 for i in positions:
-    print(i)
+    if(i[0].get_valor() == "."):
+        print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
+        print(i[0].get_valor(), i[0].get_hijos()[1].get_valor(),i[1],i[2])
+        hijo1 =  i[0].get_hijos()[0]
+        hijo2 =  i[0].get_hijos()[1]
+        for posicion in positions:
+            if(posicion[0]==hijo1):
+                print("PARA LOS POS XD",posicion[2])
+                followvalores.append(posicion[2])
+                followTotal.append(posicion[2])
+            if(posicion[0]==hijo2):
+                print("EL FOLLOW POS XD",posicion[1])
+                followPosition.append(posicion[1])
+                followTotal.append(posicion[1])
 
-#print("Elemento",importantes)   
-#print(nullable(arboles[2]))
+        #for contador in i[2]:
+        #    print("PARA LA POS XD", contador)
 
-#for elemento in arboles:
-#    print("*-----------------------------------------------------------*")
-#    print(nullable(elemento))
+
+    elif(i[0].get_valor() == "*"):
+        print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
+        print("PARA LA POS XD", i[2],"EL FOLLOW POS XD", i[1])
+        followvalores.append(i[2])
+        followPosition.append(i[1])
+        followTotal.append(i[2])
+        followTotal.append(i[1])
+
+
+print(followvalores)
+print("*-----------------------------------------------------------*")
+print(followPosition)
+print("*-----------------------------------------------------------*")
+print(followTotal)
+
+respuesta = []
+for i in range(len(followPosition)):
+    respuesta.append([i])
+print(respuesta)
+
+for i in range(len(followvalores)):
+    for j in followvalores[i]:
+        print("JOTA ES", j)
+        print("LA POSICION",j,"TIENE EL VALOR",followPosition[i])
+        for asd in followPosition[i]:
+            respuesta[j-1].append(asd)
+for i in respuesta:
+    i.pop(0)
+
+print(respuesta)
