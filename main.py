@@ -1,8 +1,8 @@
-import thompson, AFD
+import thompson, AFD, arbol
 from graphviz import Digraph
 
 r = input("ingrese la expresion regular: ")
-
+rAFD = r
 def precedence(op):
     if (op == '*'):
         return 3
@@ -72,64 +72,40 @@ def arreglar1(r):
         i+=1
 
     return expr
-
+'''
 r = arreglar1(r)
 r = arreglar2(r)
 print("Nueva expresion regular:",r)
 clase = thompson.Automata()
 claseAFD = AFD.AutomataFD()
 
-#def metodo_pipe():
-     # crear 
-#w = input("ingrese la cadena")
+
 values = []
 ops = []
 i = 0 
 nodos = []
-puedeSer = []
 while i < len(r):
-    #print(r[i])
-    
     if r[i] == '(':
-        #print("Parentesis abre")
         ops.append(r[i])
     elif r[i].isalpha() or r[i].isdigit():
-        #print("letra",r[i])
         values.append(r[i])
     elif r[i] == ')':
-        #print('Parentesis cierra')
         while len(ops) != 0 and ops[-1] != '(':
-            #print("operacion en parentesis",ops)
-            #print("valores en parentesis",values)
             op = ops.pop()
             if op != '*':
                 val2 = values.pop()
                 val1 = values.pop()
                 temp = val1+op+val2
                 nodos.append(temp)
-                '''
-                print("El valor 1:",val1)
-                print("La operacion:", op)
-                print("El valor 2:",val2)
-                print("El temp:",temp)
-                print('*-------------------------*')
-                '''
                 if(op == '|'):
                     clase.crear_nodosPipe(val1,val2,op)
                 elif(op == '.'):
                     clase.crear_nodosCat(val1,val2,op)
-                
-                #puedeSer.append(temp)
                 values.append(temp)
         ops.pop()
     else:
-        #print("operacion agregada",r[i])
-        #print("operaciones al agregar",r[i],":",ops)
-        #print("valores al agregar",values)
         if(r[i] != '*'):
             while (len(ops) != 0 and precedence(ops[-1]) >= precedence(r[i])):
-                #print(values)
-                #print(ops)
                 val2 = values.pop()
                 val1 = values.pop()
                 op = ops.pop()
@@ -139,41 +115,19 @@ while i < len(r):
                     clase.crear_nodosPipe(val1,val2,op)
                 elif(op == '.'):
                     clase.crear_nodosCat(val1,val2,op)
-                '''
-                print("El valor 1:",val1)
-                print("La operacion:", op)
-                print("El valor 2:",val2)
-                print("El temp:",temp)
-                print('*------------ACA------------*')
-                '''
                 values.append(temp)
-                #values.append(applyOp(val1, val2, op))
             ops.append(r[i])
         else:
             #print("Entro al else")
             val1 = values.pop()
             op = r[i]
             temp = val1+op
-            #print(values)
-            #print(ops)
-            #val2 = values.pop()
-            #val1 = values.pop()
-            #op = ops.pop()
-            #temp = val1+op+val2
-            '''
-            print("El valor 1:",val1)
-            print("La operacion:", op)
-            print("El temp:",temp)
-            print('*------------ESTRELLA-------------*')
-            '''
+            #print('*------------ESTRELLA-------------*')
             clase.crear_nodosStar(val1,op)
             nodos.append(temp)
             values.append(temp)
             #values.append(applyOp(val1, val2, op))
     i+=1
-#print('*---------------------------------------------------------------*')
-
-
 while len(ops) != 0:
     #print("entre aca")
     val2 = values.pop()
@@ -191,7 +145,7 @@ while len(ops) != 0:
 
 print(ops)
 #print(values[-1])
-print(values)
+print(nodos)
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
 f = Digraph('finite_state_machine', filename='fsm.gv')
 f.attr(rankdir='LR', size='8,5')
@@ -246,7 +200,7 @@ print("Simbolos",simbolos)
 print("Inicio",inicio)
 print("Aceptacion",aceptacion)
 print("Transiciones",transiciones)
-f.view()
+#f.view()
 
 
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
@@ -322,5 +276,90 @@ print("Simbolos",simbolos)
 print("Inicio",inicioA)
 print("Aceptacion",aceptacionA)
 print("Transiciones",automata)
-fa.view()
+#fa.view()
+print("*------------------AUTOMATA AFD DIRECTO-----------------------------*")
+'''
+claseAFDD = arbol.Arbol()
+values = []
+ops = []
+i = 0 
+nodos = []
+rAFD = "("+rAFD+")#"
+rAFD = arreglar1(rAFD)
+rAFD = arreglar2(rAFD)
+print("EL R DEL AFD ES",rAFD)
+r = rAFD
 
+while i < len(r):
+    if r[i] == '(':
+        ops.append(r[i])
+    elif r[i].isalpha() or r[i].isdigit() or r[i] == '#':
+        values.append(r[i])
+    elif r[i] == ')':
+        while len(ops) != 0 and ops[-1] != '(':
+            op = ops.pop()
+            if op != '*':
+                val2 = values.pop()
+                val1 = values.pop()
+                temp = val1+op+val2
+                nodos.append(temp)
+                if(op == '|'):
+                    claseAFDD.crearHojasPipe(val1,val2,op)
+                    #clase.crear_nodosPipe(val1,val2,op)
+                    print("Para el pipe")
+                elif(op == '.'):
+                    #clase.crear_nodosCat(val1,val2,op)
+                    print("Para el concat")
+                values.append(temp)
+        ops.pop()
+    else:
+        if(r[i] != '*'):
+            while (len(ops) != 0 and precedence(ops[-1]) >= precedence(r[i])):
+                val2 = values.pop()
+                val1 = values.pop()
+                op = ops.pop()
+                temp = val1+op+val2
+                nodos.append(temp)
+                if(op == '|'):
+                    claseAFDD.crearHojasPipe(val1,val2,op)
+                    print("Para el pipe")
+                elif(op == '.'):
+                    claseAFDD.crear_nodosCat(val1,val2,op)
+                    print("Para el concat")
+                values.append(temp)
+            ops.append(r[i])
+        else:
+            #print("Entro al else")
+            val1 = values.pop()
+            op = r[i]
+            temp = val1+op
+            #print('*------------ESTRELLA-------------*')
+            claseAFDD.crear_nodosStar(val1,op)
+            print("Para la estrella")
+            nodos.append(temp)
+            values.append(temp)
+            #values.append(applyOp(val1, val2, op))
+    i+=1
+while len(ops) != 0:
+    #print("entre aca")
+    val2 = values.pop()
+    val1 = values.pop()
+    op = ops.pop()
+    temp = val1+op+val2
+    nodos.append(temp)
+    if(op == '|'):
+        print("Para el pipe")
+        claseAFDD.crearHojasPipe(val1,val2,op)
+    elif(op == '.'):
+        print("Para el concat")
+        claseAFDD.crear_nodosCat(val1,val2,op)
+    else:
+        print("MMM ESTRELLA?")
+    values.append(temp)
+
+print(values)
+print(nodos)
+print(ops)
+arboles = claseAFDD.get_nodos()
+for i in arboles:
+    print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID(),"Y ES PADRE DE",i.get_hijos())
