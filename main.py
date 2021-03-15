@@ -412,8 +412,7 @@ def nullable(elemento):
     else:
         #print("ES HOJA")
         if(elemento.get_valor() != "ε"):
-            if(elemento.get_valor() != "#"):
-                simbolos.append(elemento.get_valor())
+        
             return False
             
         else:
@@ -559,12 +558,22 @@ for i in range(len(followvalores)):
 for i in respuesta:
     i.pop(0)
 resT = [] 
+
+for i in arboles:
+    if(i.get_valor() != "#" and len(i.get_hijos()) < 1):
+        simbolos.append(i.get_valor())
+
 for i in simbolos: 
     if i not in resT: 
         resT.append(i) 
 simbolos = resT
 #print(simbolos)
 print("*-----------------------------------------------------------*")
+print(respuesta)
+for i in range(len(respuesta)):
+    if(len(respuesta[i]) < 1):
+        print("LA",i)
+        respuesta.pop(i)
 print(respuesta)
 print("*-----------------------------------------------------------*")
 for i in positions:
@@ -574,52 +583,64 @@ for i in positions:
 for i in importantes:
     print(i) 
 
-#for i in arboles:
-#    print(i)
 
-
-dEstates = [[1,2,3],[1,2,3,4],[1,2,3,5],[1,2,3,6]]
-numeros = []
-U = []
-
-for i in dEstates:
-    for j in simbolos:
-        for k in importantes:
-            #print(i,j,k[0].get_valor())
-            if(j == k[0].get_valor() and (k[0].get_iDImportante() in i)):
-                #print("Si existe")
-                numeros.append(k[0].get_iDImportante())
-        print("Para",j,numeros)
-        for h in numeros:
-            U += respuesta[h-1]
-        print("U", U)
-
-        U.clear()
-        numeros.clear() 
-
-
-'''
-def afnDirecto(firstposRoot,importantes,sim):
-    
-    elementos = []
+def Directo(firstposRoot, simbolos, importantes):
+    dEstates = [firstposRoot]
+    numeros = []
+    U = []
     transicionesNuevas = []
-    dstates = []
-    inicial = firstposRoot
-    #print("*"*150)
-    #print("LA INICIAL", inicial)
-    dstates.append(inicial)
-    elementos.append(inicial)
+    for i in dEstates:
+        #print("MJM SIP",dEstates)
+        for j in simbolos:
+            for k in importantes:
 
-    for estado in dstates:
-        for letra in sim:
-            print(estado, letra)
-            for i in estado:
-                for imp in importantes:
-                    if(i == imp[])
-            
+                #print(i,j,k[0].get_valor())
+                #print(k[0].get_iDImportante(), (k[0].get_iDImportante() in i))
 
-afnDirecto(firstposRoot,importantes,simbolos)
-            
+                if(j == k[0].get_valor() and (k[0].get_iDImportante() in i)):
+                    #print("Si existe")
+                    numeros.append(k[0].get_iDImportante())
+
+            print("Para",i,j,numeros)
 
 
-'''
+            for h in numeros:
+                U += respuesta[h-1]
+            print("U", U)
+            if(U not in dEstates):
+                #print("Entramos")
+                print("U EN EL IF XD", U)
+                dEstates.append(U)
+            if(len(U)>=1):
+                transicionesNuevas.append([i,j,U])
+
+            U = []
+            numeros.clear() 
+    return transicionesNuevas, dEstates
+
+
+transicionesNuevas, dEstates = Directo(firstposRoot, simbolos, importantes)
+
+print(transicionesNuevas)
+
+
+llave = []
+aceptacionA = []
+nuevoDic = {}
+contador = 0
+nuevosValores = dEstates.copy()
+for i in nuevosValores:
+    nuevoDic[tuple(i)] = contador
+    contador +=1
+for item in transicionesNuevas:
+    item[0]= str(nuevoDic.get(tuple(item[0])))
+    item[2]= str(nuevoDic.get(tuple(item[2])))
+print("*"*50)
+print(transicionesNuevas)
+print("*"*50)
+f = Digraph('finite_state_machine', filename='fsmasd.gv')
+f.attr(rankdir='LR', size='8,5')
+for i in transicionesNuevas:
+    f.attr('node', shape='circle')
+    f.edge(i[0], i[2], label=i[1])
+f.view()
