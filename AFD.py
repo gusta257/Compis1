@@ -43,6 +43,18 @@ class AutomataFD:
         cerradura = res
         return cerradura
 
+    def listToInt(self, lista):
+        listaN = []
+        listaS = []
+        for i in lista:
+            listaN = listaN + [int(i)]
+        cs=sorted(listaN)
+        for i in cs:
+            listaS = listaS + [str(i)]
+        return listaS
+        
+
+
     def afn(self, inicio,trans,sim):
 
         elementos = []
@@ -50,6 +62,7 @@ class AutomataFD:
         dstates = []
         inicial = self.cerraduraE(inicio,trans)
         #print("*"*150)
+        inicial = self.listToInt(inicial)
         #print("LA INICIAL", inicial)
         dstates.append(inicial)
         elementos.append(inicial)
@@ -57,9 +70,11 @@ class AutomataFD:
         for q in dstates:
             for c in sim:
                 movea = self.mov(q,c,trans)
+                movea = self.listToInt(movea)
                 #print("EL MOV DE",q,"CON",c,"ES", movea)
                 U = self.cerraduraE(movea,trans)
-                #print("LA U", U)
+                U = self.listToInt(U)
+                #print("EL CLOSURE", U)
 
                 if(U not in dstates and len(U) >= 1):
                     dstates.append(U)

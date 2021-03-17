@@ -72,7 +72,7 @@ def arreglar1(r):
         i+=1
 
     return expr
-'''
+
 r = arreglar1(r)
 r = arreglar2(r)
 print("Nueva expresion regular:",r)
@@ -200,7 +200,7 @@ print("Simbolos",simbolos)
 print("Inicio",inicio)
 print("Aceptacion",aceptacion)
 print("Transiciones",transiciones)
-#f.view()
+f.view()
 
 
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
@@ -215,9 +215,9 @@ llave = []
 aceptacionA = []
 for i in automata:
     for j in i[2]:
-        
         if(j == aceptacion[0]):
-            #print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
+            print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
+            llave.append(i[0])
             llave.append(i[2])
 
 resT = [] 
@@ -276,9 +276,9 @@ print("Simbolos",simbolos)
 print("Inicio",inicioA)
 print("Aceptacion",aceptacionA)
 print("Transiciones",automata)
-#fa.view()
+fa.view()
 print("*------------------AUTOMATA AFD DIRECTO-----------------------------*")
-'''
+
 claseAFDD = arbol.Arbol()
 values = []
 ops = []
@@ -359,11 +359,11 @@ while len(ops) != 0:
         print("MMM ESTRELLA?")
     values.append(temp)
 
-#print(values)
-#print(nodos)
+print(values)
+print(nodos)
 #print(ops)
 arboles = claseAFDD.get_nodos()
-'''
+
 for i in arboles:
     if(len(i.get_hijos()) > 1):
         if(i.get_padreID() != ""):
@@ -374,12 +374,11 @@ for i in arboles:
         print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID().get_id(),"Y ES PADRE DE",i.get_hijos()[0].get_id())
     else:
         print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID().get_id(),"Y NO TIENE HIJOS Y SU ID IMPORTANTE ES",i.get_iDImportante())
-'''
 
 
 importantes = claseAFDD.get_importantValues()
-#for elemento in importantes:
-#    print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
+for elemento in importantes:
+    print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
 simbolos = []
 
 def nullable(elemento):
@@ -444,7 +443,7 @@ def firstpos(elemento):
         if(elemento.get_valor() != "ε"):
             return [elemento.get_iDImportante()]
         else:
-            return "CERO"
+            return []
 
 def lastpos(elemento):
     #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
@@ -471,7 +470,7 @@ def lastpos(elemento):
         if(elemento.get_valor() != "ε"):
             return [elemento.get_iDImportante()]
         else:
-            return "CERO"
+            return []
 
 def followPos(elemento):
     #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
@@ -498,7 +497,7 @@ def followPos(elemento):
         if(elemento.get_valor() != "ε"):
             return [elemento.get_iDImportante()]
         else:
-            return "CERO"
+            return []
 
 
 positions = []
@@ -538,16 +537,18 @@ for i in positions:
         followTotal.append(i[1])
 
 
-#print(followvalores)
+#print("POSICIONES DEL FOLLOW",followvalores)
 #print("*-----------------------------------------------------------*")
-#print(followPosition)
+#print("VALORES DEL FOLOW",followPosition)
 #print("*-----------------------------------------------------------*")
 #print(followTotal)
 
 respuesta = []
-for i in range(len(followPosition)):
-    respuesta.append([i])
-print(respuesta)
+for i in followPosition:
+    for j in i:
+        respuesta.append([j])
+#print("RESPUESTA",respuesta)
+
 
 for i in range(len(followvalores)):
     for j in followvalores[i]:
@@ -555,26 +556,48 @@ for i in range(len(followvalores)):
         #print("LA POSICION",j,"TIENE EL VALOR",followPosition[i])
         for asd in followPosition[i]:
             respuesta[j-1].append(asd)
+print("RESPUESTA ANTES DE BORRAR LA PRIMERA POSICION DE CADA ELEM",respuesta)
 for i in respuesta:
     i.pop(0)
-resT = [] 
+cont = 0
+for i in (respuesta):
+    if(len(i)==0):
+        cont+=1
+    if (cont>1 and len(i)==0):
+        respuesta.remove(i)
+print("PRINCHE ARRAY DE RESPUESTAS",respuesta)
+
+rest = []
+for elem in respuesta: 
+    a = list(set(elem))
+    rest.append(a)
+respuesta = rest
+
+#print("RESPUESTA LUEGO  DE BORRAR LA PRIMERA POSICION DE CADA ELEM",respuesta)
+
+
+ 
+print("RESPUESTA FINAL DEBE DE HABER UN ARRAY VACIO AL FINAL",respuesta)
 
 for i in arboles:
-    if(i.get_valor() != "#" and len(i.get_hijos()) < 1):
+    if(i.get_valor() != "#" and i.get_valor() != "ε" and len(i.get_hijos()) < 1):
         simbolos.append(i.get_valor())
-
+resT = [] 
 for i in simbolos: 
     if i not in resT: 
         resT.append(i) 
+
 simbolos = resT
-#print(simbolos)
+print(simbolos)
 print("*-----------------------------------------------------------*")
 print(respuesta)
-for i in range(len(respuesta)):
-    if(len(respuesta[i]) < 1):
+
+for i in respuesta:
+    if(len(i) < 1):
         print("LA",i)
-        respuesta.pop(i)
+        respuesta.remove(i)
 print(respuesta)
+
 print("*-----------------------------------------------------------*")
 for i in positions:
     if(i[0].get_padreID() == ""):
@@ -605,11 +628,12 @@ def Directo(firstposRoot, simbolos, importantes):
 
 
             for h in numeros:
+                print("el index",h)
                 U += respuesta[h-1]
-            print("U", U)
+            #print("U", U)
             if(U not in dEstates):
                 #print("Entramos")
-                print("U EN EL IF XD", U)
+                #print("U EN EL IF XD", U)
                 dEstates.append(U)
             if(len(U)>=1):
                 transicionesNuevas.append([i,j,U])
@@ -638,9 +662,10 @@ for item in transicionesNuevas:
 print("*"*50)
 print(transicionesNuevas)
 print("*"*50)
-f = Digraph('finite_state_machine', filename='fsmasd.gv')
-f.attr(rankdir='LR', size='8,5')
+fad = Digraph('finite_state_machine', filename='fsmasd.gv')
+fad.attr(rankdir='LR', size='8,5')
+
 for i in transicionesNuevas:
-    f.attr('node', shape='circle')
-    f.edge(i[0], i[2], label=i[1])
-f.view()
+    fad.attr('node', shape='circle')
+    fad.edge(i[0], i[2], label=i[1])
+fad.view()
