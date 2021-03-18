@@ -72,7 +72,7 @@ def arreglar1(r):
         i+=1
 
     return expr
-
+'''
 r = arreglar1(r)
 r = arreglar2(r)
 print("Nueva expresion regular:",r)
@@ -205,20 +205,37 @@ f.view()
 
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
 automata, valoresF = claseAFD.afn(inicio,transiciones,simbolos)
-#print('')
-#print("VALORESf",valoresF)
-#print('')
+print('')
+for i in valoresF:
+    print("VALORESF",i)
+print('')
 #for i in automata:
 #    print("automata",i)
-#print('')
+print('')
+
+
+
+
+
+
+
 llave = []
 aceptacionA = []
-for i in automata:
-    for j in i[2]:
+#for i in automata:
+#    for j in i[2]:
+#        if(j == aceptacion[0]):
+#            #print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
+#            llave.append(i[0])
+#            llave.append(i[2])
+
+print("*"*50)
+for i in valoresF:
+    for j in i:
         if(j == aceptacion[0]):
-            print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
-            llave.append(i[0])
-            llave.append(i[2])
+            #print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
+            llave.append(i)
+
+print("*"*50)
 
 resT = [] 
 for i in llave: 
@@ -278,7 +295,7 @@ print("Aceptacion",aceptacionA)
 print("Transiciones",automata)
 fa.view()
 print("*------------------AUTOMATA AFD DIRECTO-----------------------------*")
-
+'''
 claseAFDD = arbol.Arbol()
 values = []
 ops = []
@@ -363,8 +380,10 @@ print(values)
 print(nodos)
 #print(ops)
 arboles = claseAFDD.get_nodos()
-
+aceptacion = []
 for i in arboles:
+    if(i.get_valor() =='#'):
+        aceptacion.append(i.get_iDImportante())
     if(len(i.get_hijos()) > 1):
         if(i.get_padreID() != ""):
             print("LA HOJA",i.get_id(),i.get_valor(),"ES HIJA DE",i.get_padreID().get_id(),"Y ES PADRE DE",i.get_hijos()[0].get_id(),"Y DE",i.get_hijos()[1].get_id())  
@@ -377,8 +396,8 @@ for i in arboles:
 
 
 importantes = claseAFDD.get_importantValues()
-for elemento in importantes:
-    print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
+#for elemento in importantes:
+#    print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
 simbolos = []
 
 def nullable(elemento):
@@ -590,11 +609,11 @@ for i in simbolos:
 simbolos = resT
 print(simbolos)
 print("*-----------------------------------------------------------*")
-print(respuesta)
+#print(respuesta)
 
 for i in respuesta:
     if(len(i) < 1):
-        print("LA",i)
+        #print("LA",i)
         respuesta.remove(i)
 print(respuesta)
 
@@ -603,8 +622,8 @@ for i in positions:
     if(i[0].get_padreID() == ""):
         firstposRoot = i[1]
 
-for i in importantes:
-    print(i) 
+#for i in importantes:
+#    print(i) 
 
 
 def Directo(firstposRoot, simbolos, importantes):
@@ -624,16 +643,21 @@ def Directo(firstposRoot, simbolos, importantes):
                     #print("Si existe")
                     numeros.append(k[0].get_iDImportante())
 
-            print("Para",i,j,numeros)
+            #print("Para",i,j,numeros)
 
 
             for h in numeros:
-                print("el index",h)
+                #print("el index",h)
                 U += respuesta[h-1]
-            #print("U", U)
+            print("U", U)
+            test = []
+            for letra in U:
+                if letra not in test:
+                    test.append(letra)
+            U = test            
             if(U not in dEstates):
                 #print("Entramos")
-                #print("U EN EL IF XD", U)
+                print("U EN EL IF XD", U)
                 dEstates.append(U)
             if(len(U)>=1):
                 transicionesNuevas.append([i,j,U])
@@ -645,17 +669,37 @@ def Directo(firstposRoot, simbolos, importantes):
 
 transicionesNuevas, dEstates = Directo(firstposRoot, simbolos, importantes)
 
-print(transicionesNuevas)
+print("jksadbfljsadh flajsdsa",transicionesNuevas)
+print("LA ACEPTACION ES",aceptacion)
 
 
 llave = []
 aceptacionA = []
+
+print("*"*50)
+for i in dEstates:
+    for j in i:
+        if(j == aceptacion[0]):
+            #print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
+            llave.append(i)
+print(llave)
+print("*"*50)
+
 nuevoDic = {}
 contador = 0
 nuevosValores = dEstates.copy()
+print("-"*50)
+print(nuevosValores)
+print(transicionesNuevas)
+print("-"*50)
+
+
 for i in nuevosValores:
     nuevoDic[tuple(i)] = contador
     contador +=1
+for item in llave:
+    aceptacionA.append(str(nuevoDic.get(tuple(item))))
+
 for item in transicionesNuevas:
     item[0]= str(nuevoDic.get(tuple(item[0])))
     item[2]= str(nuevoDic.get(tuple(item[2])))
@@ -664,6 +708,12 @@ print(transicionesNuevas)
 print("*"*50)
 fad = Digraph('finite_state_machine', filename='fsmasd.gv')
 fad.attr(rankdir='LR', size='8,5')
+
+
+for i in aceptacionA:
+    
+    fad.attr('node', shape='doublecircle')
+    fad.node(i)
 
 for i in transicionesNuevas:
     fad.attr('node', shape='circle')
