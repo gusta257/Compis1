@@ -63,7 +63,7 @@ class AutomataFD:
         inicial = self.cerraduraE(inicio,trans)
         #print("*"*150)
         inicial = self.listToInt(inicial)
-        print("LA INICIAL", inicial)
+        #print("LA INICIAL", inicial)
         dstates.append(inicial)
         elementos.append(inicial)
 
