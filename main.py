@@ -1,8 +1,7 @@
 import thompson, AFD, arbol
 from graphviz import Digraph
 
-r = input("ingrese la expresion regular: ")
-rAFD = r
+########################## METODOS QUE SE PUEDEN PONER EN OTRO MODULO ##########################
 def precedence(op):
     if (op == '*'):
         return 3
@@ -34,8 +33,6 @@ def arreglar2(r):
             expr = expr + r[i]
         i += 1
     return expr
-
-
 def arreglar1(r):
     #ε
     i = 0
@@ -72,10 +69,18 @@ def arreglar1(r):
         i+=1
 
     return expr
-'''
+
+#########################################################################
+
+r = input("ingrese la expresion regular: ")
+w = input("ingrese la cadena a evaluar: ")
+
+rAFD = r
 r = arreglar1(r)
 r = arreglar2(r)
 print("Nueva expresion regular:",r)
+
+
 clase = thompson.Automata()
 claseAFD = AFD.AutomataFD()
 
@@ -143,7 +148,7 @@ while len(ops) != 0:
         print("MMM ESTRELLA?")
     values.append(temp)
 
-print(ops)
+#print(ops)
 #print(values[-1])
 print(nodos)
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
@@ -194,14 +199,58 @@ for i in simbolos:
         resT.append(i) 
 simbolos = resT
 
+
+def cerraduraE(estadosCerradura,trans):
+        cerradura = []
+        nuevoArray = estadosCerradura.copy()
+        visitados = []
+        ##print("EL NUEVO ARRAY ES", nuevoArray)
+        for qE in nuevoArray:
+            for x in trans:
+                if(x[0] == qE and x[1] =='ε' and (x[2] not in visitados)):
+                    ##print("APPENDENADO",x[2])
+                    visitados.append(x[2])
+                    nuevoArray.append(x[2])
+        res = [] 
+        for i in nuevoArray: 
+            if i not in res: 
+                res.append(i) 
+        cerradura = res
+        return cerradura
+
+def mov(statesMov, letraM,transM):
+        moveA = []
+        arrayNUEVO = statesMov.copy()
+        stacker = []
+        for vMov in arrayNUEVO:
+            for bM in transM:
+                if(bM[0] == vMov and bM[1] ==letraM):
+                    #arrayNUEVO.append(bM[2])
+                    moveA.append(bM[2])
+        return moveA
+
+def simulacionThompson(ini,trans):
+    s0 = cerraduraE(ini,trans)
+    for c in w:
+        s0 = cerraduraE(mov(s0, c,trans),trans)
+    if(aceptacion[0] in s0):
+        print("SI")
+    else:
+        print("No")
+simulacionThompson(inicio,transiciones)
+
+
+
+
+
 print("*----------------AUTOMATA AFN-------------------------------*")
 print("Estados",estados)
 print("Simbolos",simbolos)
 print("Inicio",inicio)
 print("Aceptacion",aceptacion)
 print("Transiciones",transiciones)
-f.view()
-
+#f.view()
+'''
 
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
 automata, valoresF = claseAFD.afn(inicio,transiciones,simbolos)
@@ -212,10 +261,6 @@ print('')
 #for i in automata:
 #    print("automata",i)
 print('')
-
-
-
-
 
 
 
@@ -295,7 +340,7 @@ print("Aceptacion",aceptacionA)
 print("Transiciones",automata)
 fa.view()
 print("*------------------AUTOMATA AFD DIRECTO-----------------------------*")
-'''
+
 claseAFDD = arbol.Arbol()
 values = []
 ops = []
@@ -719,3 +764,4 @@ for i in transicionesNuevas:
     fad.attr('node', shape='circle')
     fad.edge(i[0], i[2], label=i[1])
 fad.view()
+'''
