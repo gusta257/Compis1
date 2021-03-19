@@ -79,8 +79,8 @@ class Arbol:
             #print("*"*500)
     
         else:
-            print("ENTRO AL IF DE PIPE DONDE ES PIPE DE ESTRUCTURAS ")
-            print(self.estructuras)
+            #print("ENTRO AL IF DE PIPE DONDE ES PIPE DE ESTRUCTURAS ")
+            #print(self.estructuras)
             hojaH2 = self.nodos[self.estructuras[-1]-1]
             hojaH1 = self.nodos[self.estructuras[-2]-1]
 
@@ -199,7 +199,7 @@ class Arbol:
             #print("*"*500)
             
         elif(len(val2)==1 and len(val1)==1):
-            print("IF DE CONCATENACION SI VAL 1 Y 2 SON LEN 1")
+            #print("IF DE CONCATENACION SI VAL 1 Y 2 SON LEN 1")
             id+=1
             ##print("EL ID DEL HIJO1",hojaH1.get_id())
             if(val1 != "ε"):

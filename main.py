@@ -1,5 +1,6 @@
 import thompson, AFD, arbol
 from graphviz import Digraph
+import sys
 
 ########################## METODOS QUE SE PUEDEN PONER EN OTRO MODULO ##########################
 def precedence(op):
@@ -10,6 +11,21 @@ def precedence(op):
     if (op == '|'):
         return 1
     return 0
+
+def contar(r):
+    cont1 = 0
+    cont2 = 0 
+    for i in r:
+        if(i == "("):
+            cont1+=1
+        if(i==")"):
+            cont2+=1
+    if(cont1 == cont2):
+        return True
+    else:
+        return False
+
+
 
 def arreglar2(r):
     i = 0
@@ -74,6 +90,14 @@ def arreglar1(r):
 
 r = input("ingrese la expresion regular: ")
 w = input("ingrese la cadena a evaluar: ")
+
+if(contar(r)):
+    pass
+else:
+    print("Expresion no valida")
+    print("Adios")
+    sys.exit()
+
 
 rAFD = r
 r = arreglar1(r)
@@ -152,11 +176,11 @@ while len(ops) != 0:
 ##print(values[-1])
 #print(nodos)
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
-f = Digraph('finite_state_machine', filename='fsm.gv')
-f.attr(rankdir='LR', size='8,5')
+fTH = Digraph('finite_state_machine', filename='fsm.gv')
+fTH.attr(rankdir='LR', size='8,5')
 
-f.attr('node', shape='doublecircle')
-f.node(str(clase.get_nodos()[-1].get_id()))
+fTH.attr('node', shape='doublecircle')
+fTH.node(str(clase.get_nodos()[-1].get_id()))
 
 estados = []
 simbolos = []
@@ -175,7 +199,7 @@ for i in clase.get_nodos():
     if(str(i.get_valor()) != "ε" and str(i.get_valor()) != ""):
         simbolos.append(i.get_valor())
 
-    f.attr('node', shape='circle')
+    fTH.attr('node', shape='circle')
     largo = len(i.get_transision())
     if(largo == 0 ):
         pass
@@ -185,13 +209,13 @@ for i in clase.get_nodos():
         for j in i.get_transision():
         #    #print( ( i.get_id(),i.get_valor() ) , j )
             transiciones.append(( str(i.get_id()),str(i.get_valor()), str(j)))
-            f.edge(str(i.get_id()), str(j), label= str(i.get_valor()))
+            fTH.edge(str(i.get_id()), str(j), label= str(i.get_valor()))
     else:
         ##print(( i.get_id(),i.get_valor() ) , i.get_transision()[0] )
 
         transiciones.append(( str(i.get_id()),str(i.get_valor()), str(i.get_transision()[0])))
 
-        f.edge(str(i.get_id()), str(i.get_transision()[0]), label=str(i.get_valor()))
+        fTH.edge(str(i.get_id()), str(i.get_transision()[0]), label=str(i.get_valor()))
 
 resT = [] 
 for i in simbolos: 
@@ -237,20 +261,34 @@ def simulacionThompson(ini,trans):
         print("SI PARA THOMPSON")
     else:
         print("NO PARA THOMPSON")
-simulacionThompson(inicio,transiciones)
 
 
 
 
 
-#print("*----------------AUTOMATA AFN-------------------------------*")
+
+
 #print("Estados",estados)
 #print("Simbolos",simbolos)
 #print("Inicio",inicio)
 #print("Aceptacion",aceptacion)
 #print("Transiciones",transiciones)
-#f.view()
 
+fTH.view()
+
+archivo = f'''
+*----------------AUTOMATA AFN-------------------------------*"
+Estados = {estados}
+Simbolos = {simbolos}
+Inicio = {inicio}
+Aceptacion = {aceptacion}
+Transiciones = {transiciones}
+'''
+print(archivo)
+simulacionThompson(inicio,transiciones)
+with open("FILE.txt", "w", encoding="utf-8") as f:
+    f.write(archivo)
+f.close()
 
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
 automata, valoresF = claseAFD.afn(inicio,transiciones,simbolos)
@@ -347,7 +385,7 @@ def simulacionConjuntos(ini,trans):
         print("NO PARA EL DE SUBCONJUNTOS")
 
 
-simulacionConjuntos(inicioA,automata)
+
 
 
 #print("NUEVOS",nuevosValores)
@@ -357,6 +395,22 @@ simulacionConjuntos(inicioA,automata)
 #print("Inicio",inicioA)
 #print("Aceptacion",aceptacionA)
 #print("Transiciones",automata)
+
+archivo = f'''
+*----------------AUTOMATA AFD SUBCONJUNTOS-------------------------------*"
+Estados = {estadosA}
+Simbolos = {simbolos}
+Inicio = {inicioA}
+Aceptacion = {aceptacionA}
+Transiciones = {automata}
+'''
+print(archivo)
+with open("FILE.txt", "a", encoding="utf-8") as f:
+    f.write(archivo)
+f.close()
+
+
+simulacionConjuntos(inicioA,automata)
 fa.view()
 #print("*------------------AUTOMATA AFD DIRECTO-----------------------------*")
 
@@ -787,7 +841,7 @@ def simulacionAFD(ini,trans):
         print("SI PARA EL AFD")
     else:
         print("NO PARA EL AFD")
-simulacionAFD([transicionesNuevas[0][0]],transicionesNuevas)
+
 
 fad = Digraph('finite_state_machine', filename='fsmasd.gv')
 fad.attr(rankdir='LR', size='8,5')
@@ -797,8 +851,31 @@ for i in aceptacionA:
     
     fad.attr('node', shape='doublecircle')
     fad.node(i)
-
+estadosA = []
 for i in transicionesNuevas:
+    estadosA.append(i[0])
+    estadosA.append(i[2])
     fad.attr('node', shape='circle')
     fad.edge(i[0], i[2], label=i[1])
-#fad.view()
+fad.view()
+
+
+resT = [] 
+for i in estadosA: 
+    if i not in resT: 
+        resT.append(i) 
+estadosA = resT
+
+archivo = f'''
+*----------------AUTOMATA AFD DIRECTO-------------------------------*"
+Estados = {estadosA}
+Simbolos = {simbolos}
+Inicio = {[transicionesNuevas[0][0]]}
+Aceptacion = {aceptacionA}
+Transiciones = {transicionesNuevas}
+'''
+print(archivo)
+simulacionAFD([transicionesNuevas[0][0]],transicionesNuevas)
+with open("FILE.txt", "a", encoding="utf-8") as f:
+    f.write(archivo)
+f.close()
