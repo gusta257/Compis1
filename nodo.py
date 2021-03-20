@@ -1,3 +1,5 @@
+# CLASE NODO LA CUAL SERA LA FORMA DE CONSTRUCCION DE THOMPSON 
+# CONTANDO CON SU ID EL VALOR QUE POSEE SU TRANSICION Y A DONDE VA
 class Nodo:
     def __init__(self, id, valor, transiciones = []):
         self. id = id
@@ -21,11 +23,3 @@ class Nodo:
 
     def set_valor(self, val):
         self.valor = val
-'''
-nodo1 = Nodo(1, 'a', [2,3])
-
-print(nodo1)
-print(nodo1.get_id())
-print(nodo1.get_valor())
-print(nodo1.get_transision())
-'''

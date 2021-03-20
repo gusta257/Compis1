@@ -1,3 +1,4 @@
+# CLASE QUE ARMA LOS NODOS DEL AFN
 import nodo
 
 
@@ -5,7 +6,7 @@ id = 0
 estructuras = []
 
 class Automata:
-    
+    #ESTADO INICIAL Y FINAL DELA AUTOMATA ENTERO
     def __init__(self):
         self.estadoInicial = None
         self.estadoFinal = None
@@ -13,6 +14,8 @@ class Automata:
     
     def get_nodos(self):
         return self.nodos
+
+    ## METODO PARA CREAR NODOS DE UNA CONCATENACION
 
     def crear_nodosCat(self,val1,val2,op):
         global id
@@ -120,6 +123,7 @@ class Automata:
 
             #print("ESTRUCTURAS LUEGO DEL ASJLDHFA",estructuras)
 
+    ## METODO PARA CREAR NODOS DE UN OR 
 
     def crear_nodosPipe(self,val1,val2,op):
         global id
@@ -268,6 +272,7 @@ class Automata:
             self.estadoFinal = estructuras[-1][1]
             ##print("LAS ESTRUCTURAS LUEGO DEL PIPE",estructuras)
             
+    ## METODO PARA CREAR NODOS DE UNA CERRADURA KLEENE
 
     def crear_nodosStar(self,val1,op):
         global id

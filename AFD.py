@@ -1,5 +1,3 @@
-import nodo
-
 
 id = 0
 estructuras = []

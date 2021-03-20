@@ -2,7 +2,7 @@ import thompson, AFD, arbol
 from graphviz import Digraph
 import sys
 
-########################## METODOS QUE SE PUEDEN PONER EN OTRO MODULO ##########################
+# METODO PARA ASIGNAR QUE OPERACION TIENE MAS PRECEDENCIA QUE OTRO EN ESTE ORDEN DESC: * -> . -> |
 def precedence(op):
     if (op == '*'):
         return 3
@@ -12,6 +12,7 @@ def precedence(op):
         return 1
     return 0
 
+# METODO PARA CONTAR CANTIDAD DE PARENTESIS EN REGEX Y VERIFICAR SI ESTA BIEN INGRESADO
 def contar(r):
     cont1 = 0
     cont2 = 0 
@@ -25,8 +26,8 @@ def contar(r):
     else:
         return False
 
-
-
+# METODO QUE AGREGA UN OPERADOR "." CADA VEZ QUE SE NECESITE
+# CREDITOS: PAUL BELCHES POR DAR SU IDEA DE COLOCAR EL PUNTO PARA FACILITAR LA LECTURA
 def arreglar2(r):
     i = 0
     expr = ''
@@ -49,6 +50,10 @@ def arreglar2(r):
             expr = expr + r[i]
         i += 1
     return expr
+
+# METODO QUE CONVIERTE LAS EXPRESIONES REGULARES EN SUS OTRAS FORMAS
+# (A)+ -> (A)*(A)
+# (A)? -> (A|ε)
 def arreglar1(r):
     #ε
     i = 0
@@ -86,11 +91,12 @@ def arreglar1(r):
 
     return expr
 
-#########################################################################
+## INGRESO DE CADENA Y REGEX
 
 r = input("ingrese la expresion regular: ")
 w = input("ingrese la cadena a evaluar: ")
 
+# SI LA CADENA ESTA BIEN SIGUE SINO SE ACABA EL PROGRAMA
 if(contar(r)):
     pass
 else:
@@ -98,17 +104,16 @@ else:
     print("Adios")
     sys.exit()
 
-
+# ALTERACIONES AL REGEX
 rAFD = r
 r = arreglar1(r)
 r = arreglar2(r)
-#print("Nueva expresion regular:",r)
 
-
+# INICIALIZACION DE CLASES
 clase = thompson.Automata()
 claseAFD = AFD.AutomataFD()
 
-
+# LECTURA DE REGEX BASADO EN El ARTIMETIC EXPRESSION EVALUATION DE GEEKS FOR GEEKS
 values = []
 ops = []
 i = 0 
@@ -175,7 +180,9 @@ while len(ops) != 0:
 ##print(ops)
 ##print(values[-1])
 #print(nodos)
+
 #-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
+#GRAFICACION
 fTH = Digraph('finite_state_machine', filename='fsm.gv')
 fTH.attr(rankdir='LR', size='8,5')
 
@@ -191,7 +198,7 @@ transiciones = []
 inicio.append(str(clase.estadoInicial))
 aceptacion.append(str(clase.estadoFinal))
 
-
+#OBTENCION DE DATOS
 for i in clase.get_nodos():
     
     estados.append(i.get_id())
@@ -223,7 +230,7 @@ for i in simbolos:
         resT.append(i) 
 simbolos = resT
 
-
+# METODO CERRADURA PARA SIMULAR ALGORITMOS
 def cerraduraE(estadosCerradura,trans):
         cerradura = []
         nuevoArray = estadosCerradura.copy()
@@ -242,6 +249,7 @@ def cerraduraE(estadosCerradura,trans):
         cerradura = res
         return cerradura
 
+# METODO MOVE PARA SIMULAR ALGORITMOS
 def mov(statesMov, letraM,transM):
         moveA = []
         arrayNUEVO = statesMov.copy()
@@ -253,6 +261,7 @@ def mov(statesMov, letraM,transM):
                     moveA.append(bM[2])
         return moveA
 
+#METODO DE SIMULACION UTILIZANDO MOVE Y CERRADURA
 def simulacionThompson(ini,trans):
     s0 = cerraduraE(ini,trans)
     for c in w:
@@ -264,18 +273,10 @@ def simulacionThompson(ini,trans):
 
 
 
-
-
-
-
-#print("Estados",estados)
-#print("Simbolos",simbolos)
-#print("Inicio",inicio)
-#print("Aceptacion",aceptacion)
-#print("Transiciones",transiciones)
-
+#DIBUJO DE THOMPSON
 fTH.view()
 
+#INGRESO DE DATOS AL ARCHIVO TXT
 archivo = f'''
 *----------------AUTOMATA AFN-------------------------------*"
 Estados = {estados}
@@ -290,8 +291,11 @@ with open("FILE.txt", "w", encoding="utf-8") as f:
     f.write(archivo)
 f.close()
 
-#-------------------------------------PROCESO DATOS---------------------------------------------------------------------------------
+#-------------------------------------ALGORITMO DE SUBCONJUNTOS---------------------------------------------------------------------------------
+
+# OBTENCION DE AUTOMATA
 automata, valoresF = claseAFD.afn(inicio,transiciones,simbolos)
+
 #print('')
 #for i in valoresF:
 #    print("VALORESF",i)
@@ -301,33 +305,21 @@ automata, valoresF = claseAFD.afn(inicio,transiciones,simbolos)
 #print('')
 
 
-
+# SELECCION DE ESTADOS DE ACEPTACION Y ELIMINACION DE REPETIDOS
 llave = []
 aceptacionA = []
-#for i in automata:
-#    for j in i[2]:
-#        if(j == aceptacion[0]):
-#            ##print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
-#            llave.append(i[0])
-#            llave.append(i[2])
-
-#print("*"*50)
 for i in valoresF:
     for j in i:
         if(j == aceptacion[0]):
-            ##print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
             llave.append(i)
-#print("*"*50)
-
 resT = [] 
 for i in llave: 
     if i not in resT: 
         resT.append(i) 
 llave = resT
 
-#for i in llave:
-#    print(i)
 
+# CREACION DE DICCIONARIO PARA ASIGNARLE LOS NUEVOS VALORES A LOS ESTADOS
 nuevoDic = {}
 contador = 0
 nuevosValores = valoresF.copy()
@@ -337,20 +329,19 @@ for i in nuevosValores:
 for item in automata:
     item[0]= str(nuevoDic.get(tuple(item[0])))
     item[2]= str(nuevoDic.get(tuple(item[2])))
-
 for item in llave:
     aceptacionA.append(str(nuevoDic.get(tuple(item))))
 
+#GRAFICACION
 fa = Digraph('finite_state_machine', filename='fsam.gv')
 fa.attr(rankdir='LR', size='8,5')
 for i in aceptacionA:
-
     fa.attr('node', shape='doublecircle')
     fa.node(i)
 
+#OBTENCION DE DATOS
 estadosA = []
 simbolosA = []
-
 resT = [] 
 for i in automata: 
     if i not in resT: 
@@ -362,7 +353,6 @@ for i in automata:
     estadosA.append(i[2])
     fa.attr('node', shape='circle')
     fa.edge(str(i[0]), str(i[2]), label=str(i[1]))
-
 resT = [] 
 for i in estadosA: 
     if i not in resT: 
@@ -370,6 +360,7 @@ for i in estadosA:
 estadosA = resT
 inicioA = [automata[0][0]]
 
+#METODO PARA LA SIMULACION DE SUBCONJUNTOS
 def simulacionConjuntos(ini,trans):
     s = ini
     cont =0 
@@ -384,18 +375,7 @@ def simulacionConjuntos(ini,trans):
     else:
         print("NO PARA EL DE SUBCONJUNTOS")
 
-
-
-
-
-#print("NUEVOS",nuevosValores)
-#print("*------------------AUTOMATA AFD-----------------------------*")
-#print("Estados",estadosA)
-#print("Simbolos",simbolos)
-#print("Inicio",inicioA)
-#print("Aceptacion",aceptacionA)
-#print("Transiciones",automata)
-
+# LLENANDO LOS DATOS EN EL TXT
 archivo = f'''
 *----------------AUTOMATA AFD SUBCONJUNTOS-------------------------------*"
 Estados = {estadosA}
@@ -408,10 +388,11 @@ print(archivo)
 with open("FILE.txt", "a", encoding="utf-8") as f:
     f.write(archivo)
 f.close()
-
-
 simulacionConjuntos(inicioA,automata)
 fa.view()
+
+# INICIO DE AFD DIRECTO
+# PARA FUTURO METERLO EN SU PROPIA CLASE
 #print("*------------------AUTOMATA AFD DIRECTO-----------------------------*")
 
 claseAFDD = arbol.Arbol()
@@ -419,12 +400,13 @@ values = []
 ops = []
 i = 0 
 nodos = []
+# AGREGANDO AL REGEX EL # FINAL Y LAS CONVERSIONES NECESARIA
 rAFD = "("+rAFD+")#"
 rAFD = arreglar1(rAFD)
-rAFD = arreglar2(rAFD)
-#print("EL R DEL AFD ES",rAFD)
+rAFD = arreglar2(rAFD) 
 r = rAFD
 
+# SE UTILIZA LA MISMA LECTURA DE DATOS SOLO QUE ESTA VEZ PARA ARMAR EL ARBOL 
 while i < len(r):
     if r[i] == '(':
         ops.append(r[i])
@@ -494,13 +476,12 @@ while len(ops) != 0:
         print("MMM ESTRELLA?")
     values.append(temp)
 
-#print(values)
-#print(nodos)
-##print(ops)
+
+#OBTENCION DEL ARBOL
 arboles = claseAFDD.get_nodos()
 aceptacion = []
 
-
+# EXTRACCION DE INFORMACION PARA ESTADO DE ACEPTACION
 for i in arboles:
     if(i.get_valor() =='#'):
         aceptacion.append(i.get_iDImportante())
@@ -516,8 +497,10 @@ for i in arboles:
 
 importantes = claseAFDD.get_importantValues()
 #for elemento in importantes:
-#    #print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
+#    print(elemento[0].get_valor(), "numero",elemento[1],"id",elemento[2])
 simbolos = []
+
+# METODO PARA DETERMINAR SI EL ELEMENTO ES NULLABLE O NO
 
 def nullable(elemento):
     #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
@@ -555,6 +538,7 @@ def nullable(elemento):
         else:
             return True
 
+# METODO PARA OBTENER EL FIRSTPOS DEL ELEMENTO
 
 def firstpos(elemento):
     #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
@@ -583,6 +567,8 @@ def firstpos(elemento):
         else:
             return []
 
+# METODO PARA OBTENER EL LASTPOS DEL ELEMENTO
+
 def lastpos(elemento):
     #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
     if(len(elemento.get_hijos()) > 0):
@@ -609,6 +595,8 @@ def lastpos(elemento):
             return [elemento.get_iDImportante()]
         else:
             return []
+
+# METODO PARA OBTENER EL FOLLOW POS DEL ELEMENTO
 
 def followPos(elemento):
     #HAY QUE REVISAR SI ES HOJA O NO, SERA HOJA SI NO TIENE HIJOS
@@ -638,14 +626,18 @@ def followPos(elemento):
             return []
 
 
+
+#OBTENCION DE LOS NOSOS
 positions = []
 for i in arboles:
-    ##print("El first pos de", i.get_valor() ,"es",firstpos(i),"y su lastpos es",lastpos(i))
+    #print("El first pos de", i.get_valor() ,"es",firstpos(i),"y su lastpos es",lastpos(i))
     positions.append((i,firstpos(i),lastpos(i)))
 followvalores = []
 followPosition = []
 followTotal = []
 #print("*"*100)
+
+#ASIGNACION DEL FOLLOW POS
 for i in positions:
     if(i[0].get_valor() == "."):
         ##print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
@@ -654,11 +646,11 @@ for i in positions:
         hijo2 =  i[0].get_hijos()[1]
         for posicion in positions:
             if(posicion[0]==hijo1):
-                ##print("PARA LOS POS XD",posicion[2])
+                #print("PARA LOS POS XD",posicion[2])
                 followvalores.append(posicion[2])
                 followTotal.append(posicion[2])
             if(posicion[0]==hijo2):
-                ##print("EL FOLLOW POS XD",posicion[1])
+                #print("EL FOLLOW POS XD",posicion[1])
                 followPosition.append(posicion[1])
                 followTotal.append(posicion[1])
 
@@ -667,34 +659,27 @@ for i in positions:
 
 
     elif(i[0].get_valor() == "*"):
-        ##print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
-        ##print("PARA LA POS XD", i[2],"EL FOLLOW POS XD", i[1])
+        #print(i[0].get_valor(), i[0].get_hijos()[0].get_valor(),i[1],i[2])
+        #print("PARA LA POS XD", i[2],"EL FOLLOW POS XD", i[1])
         followvalores.append(i[2])
         followPosition.append(i[1])
         followTotal.append(i[2])
         followTotal.append(i[1])
 
 
-##print("POSICIONES DEL FOLLOW",followvalores)
-##print("*-----------------------------------------------------------*")
-##print("VALORES DEL FOLOW",followPosition)
-##print("*-----------------------------------------------------------*")
-##print(followTotal)
 
+
+# ARRAY DE DE TAMAÑO PARA RECIBIR LOS VALORES DE FOLLOW POS
 respuesta = []
-for i in followPosition:
+for i in followvalores:
     for j in i:
         respuesta.append([j])
-##print("RESPUESTA",respuesta)
 
-
+#LLENADO DE VALORES DE FOLLOW POS
 for i in range(len(followvalores)):
     for j in followvalores[i]:
-        ##print("JOTA ES", j)
-        ##print("LA POSICION",j,"TIENE EL VALOR",followPosition[i])
         for asd in followPosition[i]:
             respuesta[j-1].append(asd)
-#print("RESPUESTA ANTES DE BORRAR LA PRIMERA POSICION DE CADA ELEM",respuesta)
 for i in respuesta:
     i.pop(0)
 cont = 0
@@ -703,20 +688,18 @@ for i in (respuesta):
         cont+=1
     if (cont>1 and len(i)==0):
         respuesta.remove(i)
-#print("PRINCHE ARRAY DE RESPUESTAS",respuesta)
-
 rest = []
 for elem in respuesta: 
     a = list(set(elem))
     rest.append(a)
 respuesta = rest
+for i in respuesta:
+    if(len(i) < 1):
+        ##print("LA",i)
+        respuesta.remove(i)
 
-##print("RESPUESTA LUEGO  DE BORRAR LA PRIMERA POSICION DE CADA ELEM",respuesta)
 
-
- 
-#print("RESPUESTA FINAL DEBE DE HABER UN ARRAY VACIO AL FINAL",respuesta)
-
+#OBTENCION DE SIMBOLOS DEL ARBOL
 for i in arboles:
     if(i.get_valor() != "#" and i.get_valor() != "ε" and len(i.get_hijos()) < 1):
         simbolos.append(i.get_valor())
@@ -724,27 +707,13 @@ resT = []
 for i in simbolos: 
     if i not in resT: 
         resT.append(i) 
-
 simbolos = resT
-#print(simbolos)
-#print("*-----------------------------------------------------------*")
-##print(respuesta)
 
-for i in respuesta:
-    if(len(i) < 1):
-        ##print("LA",i)
-        respuesta.remove(i)
-#print(respuesta)
-
-#print("*-----------------------------------------------------------*")
 for i in positions:
     if(i[0].get_padreID() == ""):
         firstposRoot = i[1]
 
-#for i in importantes:
-#    #print(i) 
-
-
+# METODO PARA CREAR LOS ESTADOS DEL AUTOMATA FINAL 
 def Directo(firstposRoot, simbolos, importantes):
     dEstates = [firstposRoot]
     numeros = []
@@ -785,34 +754,21 @@ def Directo(firstposRoot, simbolos, importantes):
             numeros.clear() 
     return transicionesNuevas, dEstates
 
-
+#OBTENCION DE AUTOMATA
 transicionesNuevas, dEstates = Directo(firstposRoot, simbolos, importantes)
 
-#print("jksadbfljsadh flajsdsa",transicionesNuevas)
-#print("LA ACEPTACION ES",aceptacion)
-
-
+# SELECCION DE ESTADOS DE ACEPTACION
 llave = []
 aceptacionA = []
-
-#print("*"*50)
 for i in dEstates:
     for j in i:
         if(j == aceptacion[0]):
-            ##print("LA J ES",j,"Y LA ACPTACION",aceptacion[0])
             llave.append(i)
-#print(llave)
-#print("*"*50)
 
+# CREACION DE DICCIONARO PARA ASIGNACION DE NUEVOS VALORES PARA LOS ESTADOS DE AUTOAMATA 
 nuevoDic = {}
 contador = 0
 nuevosValores = dEstates.copy()
-#print("-"*50)
-#print(nuevosValores)
-#print(transicionesNuevas)
-#print("-"*50)
-
-
 for i in nuevosValores:
     nuevoDic[tuple(i)] = contador
     contador +=1
@@ -822,33 +778,26 @@ for item in llave:
 for item in transicionesNuevas:
     item[0]= str(nuevoDic.get(tuple(item[0])))
     item[2]= str(nuevoDic.get(tuple(item[2])))
-#print("*"*50)
-#print(transicionesNuevas)
-#print("*"*50)
 
+
+#METODO DE SIMULADION DEL AFD DIRECTO
 def simulacionAFD(ini,trans):
     s = ini
     cont = 0
     for c in w:
         s = (mov(s, c,trans))
-    #print("LA PPINCHE S",s)
-    #print(aceptacionA)
     for i in aceptacionA:
         if(i in s):
             cont+=1
-    
     if(cont>=1):
         print("SI PARA EL AFD")
     else:
         print("NO PARA EL AFD")
 
-
+# GRAFICACION
 fad = Digraph('finite_state_machine', filename='fsmasd.gv')
 fad.attr(rankdir='LR', size='8,5')
-
-
 for i in aceptacionA:
-    
     fad.attr('node', shape='doublecircle')
     fad.node(i)
 estadosA = []
@@ -859,13 +808,14 @@ for i in transicionesNuevas:
     fad.edge(i[0], i[2], label=i[1])
 fad.view()
 
-
+#LIMPIEZA DE ESTADOS DE ACEPTACION
 resT = [] 
 for i in estadosA: 
     if i not in resT: 
         resT.append(i) 
 estadosA = resT
 
+#IMPRESION DE DATOS EN TXT
 archivo = f'''
 *----------------AUTOMATA AFD DIRECTO-------------------------------*"
 Estados = {estadosA}
